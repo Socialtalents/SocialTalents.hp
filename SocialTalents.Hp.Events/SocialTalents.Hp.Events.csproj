@@ -4,8 +4,4 @@
     <TargetFramework>netstandard1.2</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Events\" />
-  </ItemGroup>
-
 </Project>

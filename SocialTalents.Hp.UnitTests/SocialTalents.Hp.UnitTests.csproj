@@ -50,10 +50,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Events\EventsTest.cs" />
+    <Compile Include="Events\Internal\ChildEvent.cs" />
+    <Compile Include="Events\Internal\TestEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SocialTalents.Hp.Events\SocialTalents.Hp.Events.csproj">
+      <Project>{9b8eddd6-eafe-4c56-bcce-ba97edcc8cd3}</Project>
+      <Name>SocialTalents.Hp.Events</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SocialTalents.Hp.MongoDb\SocialTalents.Hp.MongoDb.csproj">
+      <Project>{22958f8b-d839-4550-8d8b-9bc5190a610d}</Project>
+      <Name>SocialTalents.Hp.MongoDb</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
