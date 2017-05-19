@@ -52,51 +52,6 @@ namespace SocialTalents.Hp.Events
             Subscribe<TEvent>(handler.Handle);
         }
 
-        /// <summary>
-        /// Call first handler. If it fails with TException - second one called
-        /// </summary>
-        /// <typeparam name="TEvent"></typeparam>
-        /// <typeparam name="TException"></typeparam>
-        /// <param name="handler">handler</param>
-        /// <param name="onFail">onfail handler, called when handler failed</param>
-        /// <param name="raiseException">Throw or not exception after onfail</param>
-        public static void SubscribeWithOnFail<TEvent, TException>(WorkflowStepDelegate<TEvent> handler, WorkflowStepDelegate<TEvent> onFail, bool raiseException = true) where TException : Exception
-        {
-            Subscribe<TEvent>(stepWithOnFail<TEvent, TException>(handler, onFail, raiseException));
-        }
-
-        /// <summary>
-        /// Subscribe to event with ICanHandle interface. If it fails with TException - onFail is called
-        /// </summary>
-        /// <typeparam name="TEvent"></typeparam>
-        /// <typeparam name="TException"></typeparam>
-        /// <param name="handler"></param>
-        /// <param name="onFail"></param>
-        /// <param name="raiseException"></param>
-        public static void SubscribeWithOnFail<TEvent, TException>(ICanHandle<TEvent> handler, ICanHandle<TEvent> onFail, bool raiseException = true) where TException : Exception
-        {
-            SubscribeWithOnFail<TEvent, TException>(handler.Handle, onFail.Handle, raiseException);
-        }
-
-        private static WorkflowStepDelegate<TEvent> stepWithOnFail<TEvent, TException>(WorkflowStepDelegate<TEvent> handler, WorkflowStepDelegate<TEvent> onFail, bool raiseException) where TException : Exception
-        {
-            return (param) =>
-            {
-                try
-                {
-                    handler(param);
-                }
-                catch (TException ex)
-                {
-                    if (raiseException)
-                    {
-                        EventBus.Raise<Exception>(ex, new SenderStub<Exception>());
-                    }
-                    onFail(param);
-                }
-            };
-        }
-
         public static void Raise<TEvent>(TEvent eventInstance, ICanRaise<TEvent> sender)
         {
             if (sender == null)
@@ -131,7 +86,7 @@ namespace SocialTalents.Hp.Events
             _workflows = new ConcurrentDictionary<Type, object>();
             _noSubscribersRegistry = new ConcurrentDictionary<Type, NoSubscribers>();
         }
-
+        /*
         public static void SubscribeAsync<TEvent>(WorkflowStepDelegate<TEvent> handler)
         {
             Subscribe<TEvent>(Async(handler));
@@ -148,7 +103,7 @@ namespace SocialTalents.Hp.Events
             {
                 handler.BeginInvoke(param, new AsyncCallback<TEvent>(handler).Callback, null);
             };
-        }
+        }*/
 
         private static NoSubscribers countNoSubscribers<TEvent>(TEvent data)
         {

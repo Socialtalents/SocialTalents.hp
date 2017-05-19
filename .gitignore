@@ -5,3 +5,5 @@ SocialTalents.Hp.UnitTests/obj/
 SocialTalents.Hp.MongoDb/bin/
 SocialTalents.Hp.Events/bin/
 SocialTalents.Hp.UnitTests/bin/
+Samples.Console/bin/
+Samples.Console/obj/

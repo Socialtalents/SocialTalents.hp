@@ -32,8 +32,8 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
             bool asyncSubscription = false;
             Exception ex = null;
             EventBus.Subscribe<Exception>((e) => ex = e);
-            EventBus.SubscribeAsync<TestEvent>(
-                (args) => { Thread.Sleep(1); asyncSubscription = true; }
+            EventBus.Subscribe<TestEvent>(
+                EventExtensions.Async((TestEvent args) => { Thread.Sleep(1); asyncSubscription = true; })
             );
             EventBus.Raise<TestEvent>(new TestEvent(), this);
             Assert.IsFalse(asyncSubscription);
@@ -47,8 +47,8 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
             bool asyncSubscription = false;
             Exception ex = null;
             EventBus.Subscribe<Exception>((e) => ex = e);
-            EventBus.SubscribeAsync<TestEvent>(
-                (args) => { throw new InvalidTimeZoneException(); }
+            EventBus.Subscribe<TestEvent>(
+                EventExtensions.Async((TestEvent args) => { throw new InvalidTimeZoneException(); })
             );
             EventBus.Raise<TestEvent>(new TestEvent(), this);
             Assert.IsFalse(asyncSubscription);
@@ -122,10 +122,11 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
         {
             bool secondCall = false;
             bool exceptionRaised = false;
-            EventBus.SubscribeWithOnFail<TestEvent, InvalidOperationException>(
-                (p) => { throw new InvalidOperationException(); },
-                (p) => { secondCall = true; }
-            );
+            WorkflowStepDelegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
+            WorkflowStepDelegate<TestEvent> secondHandler = (p) => { secondCall = true; };
+
+            EventBus.Subscribe<TestEvent>(firstHandler.AddOnFail<TestEvent, Exception>(secondHandler));
+
 
             EventBus.Subscribe<Exception>((param) => { exceptionRaised = true; });
 
@@ -141,10 +142,12 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
         {
             bool secondCall = false;
             bool exceptionRaised = false;
-            EventBus.SubscribeWithOnFail<TestEvent, InvalidOperationException>(
-                (p) => { throw new InvalidOperationException(); },
-                (p) => { secondCall = true; },
-                false
+
+            WorkflowStepDelegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
+            WorkflowStepDelegate<TestEvent> secondHandler = (p) => { secondCall = true; };
+
+            EventBus.Subscribe<TestEvent>(
+                firstHandler.AddOnFail<TestEvent, Exception>(secondHandler, false)
             );
 
             EventBus.Subscribe<Exception>((param) => { exceptionRaised = true; });
@@ -160,9 +163,12 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
         public void Execute_Second_Step_When_First_Fails_OptionB()
         {
             bool secondCall = false;
-            EventBus.SubscribeWithOnFail<TestEvent, ArgumentException>(
-                (p) => { throw new InvalidOperationException(); },
-                (p) => { secondCall = true; }
+
+            WorkflowStepDelegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
+            WorkflowStepDelegate<TestEvent> secondHandler = (p) => { secondCall = true; };
+
+            EventBus.Subscribe<TestEvent>(
+                firstHandler.AddOnFail<TestEvent, ArgumentException>(secondHandler)
             );
 
             EventBus.Raise(new TestEvent(), this);
