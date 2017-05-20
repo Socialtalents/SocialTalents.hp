@@ -1,4 +1,4 @@
-# SocialTalents HP Toolkip
+# SocialTalents HP Toolkit
 HP = means 'HelPer'
 ## Structure
 
