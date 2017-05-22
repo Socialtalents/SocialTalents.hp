@@ -8,5 +8,5 @@ namespace SocialTalents.Hp.Events
     /// Decalarite interface to mark classes which can raise certain type of events
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface ICanRaise<T> { }
+    public interface ICanPublish<T> { }
 }

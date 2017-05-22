@@ -4,5 +4,9 @@ using System.Text;
 
 namespace SocialTalents.Hp.Events.Internal
 {
-    internal class SenderStub<T> : ICanRaise<T> { } 
+    /// <summary>
+    /// Sender stub used to 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    internal class SenderStub<T> : ICanPublish<T> { } 
 }

@@ -11,14 +11,14 @@ namespace Samples.Console.Services
 {
     public class UserService : 
         // Mark service with ICanRaise interface to keep event visible for consumers 
-        ICanRaise<UserRegistered>
+        ICanPublish<UserRegistered>
     {
         public void RegisterUser(User user)
         {
             // Save user to Database here
 
-            // Raise event so we can do somthing with user outside UserService without adding dependancies
-            EventBus.Raise(new UserRegistered(user), this);
+            // Publish event so we can do something extra with user outside UserService without adding dependancies
+            EventBus.Publish(new UserRegistered(user), this);
         }
     }
 }

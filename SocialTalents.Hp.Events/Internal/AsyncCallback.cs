@@ -4,14 +4,14 @@ using System.Text;
 
 namespace SocialTalents.Hp.Events.Internal
 {
-    public class AsyncCallback<TEvent>
+    public class AsyncCallback<TEvent> : ICanPublish<Exception>
     {
-        public AsyncCallback(WorkflowStepDelegate<TEvent> handler)
+        public AsyncCallback(Delegate<TEvent> handler)
         {
             _handler = handler;
         }
 
-        WorkflowStepDelegate<TEvent> _handler;
+        Delegate<TEvent> _handler;
 
         public void Callback(IAsyncResult result)
         {
@@ -21,7 +21,7 @@ namespace SocialTalents.Hp.Events.Internal
             }
             catch (Exception ex)
             {
-                EventBus.Raise<Exception>(ex, new SenderStub<Exception>());
+                EventBus.Publish<Exception>(ex, this);
             }
         }
     }

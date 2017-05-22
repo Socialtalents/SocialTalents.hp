@@ -10,7 +10,7 @@ using System.Diagnostics;
 namespace SocialTalents.Hp.Events.UnitTest.Events
 {
     [TestClass]
-    public class EventsTest : ICanRaise<TestEvent>
+    public class EventsTest : ICanPublish<TestEvent>
     {
         [TestMethod]
         public void Req_MultipleSubsriptions()
@@ -20,7 +20,7 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
             EventBus.Subscribe<TestEvent>((args) => { subscription1 = true; });
             EventBus.Subscribe<TestEvent>((args) => { subscription2 = true; });
 
-            EventBus.Raise<TestEvent>(new TestEvent(), this);
+            EventBus.Publish<TestEvent>(new TestEvent(), this);
 
             Assert.IsTrue(subscription1);
             Assert.IsTrue(subscription2);
@@ -35,7 +35,7 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
             EventBus.Subscribe<TestEvent>(
                 EventExtensions.Async((TestEvent args) => { Thread.Sleep(1); asyncSubscription = true; })
             );
-            EventBus.Raise<TestEvent>(new TestEvent(), this);
+            EventBus.Publish<TestEvent>(new TestEvent(), this);
             Assert.IsFalse(asyncSubscription);
             waitFor(() => asyncSubscription);
             Assert.IsNull(ex);
@@ -50,7 +50,7 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
             EventBus.Subscribe<TestEvent>(
                 EventExtensions.Async((TestEvent args) => { throw new InvalidTimeZoneException(); })
             );
-            EventBus.Raise<TestEvent>(new TestEvent(), this);
+            EventBus.Publish<TestEvent>(new TestEvent(), this);
             Assert.IsFalse(asyncSubscription);
 
             waitFor(() => ex != null);
@@ -73,7 +73,7 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
         [ExpectedException(typeof(InvalidOperationException))]
         public void Req_CheckForWrongSubscriptions()
         {
-            for (int i = 0; i < EventBus.MaxSubscriptionsPerEvent + 1; i++)
+            for (int i = 0; i < EventBus.MaxSubscriptionsPerEventType + 1; i++)
                 EventBus.Subscribe<TestEvent>(
                     (result) => { }
                 );
@@ -83,7 +83,7 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
         [ExpectedException(typeof(ArgumentException))]
         public void Test_No_ICanRaise()
         {
-            EventBus.Raise(new EventArgs(), null);
+            EventBus.Publish(new EventArgs(), null);
         }
 
         [TestMethod]
@@ -100,14 +100,14 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
             {
                 for (int i = 0; i < 10000; i++)
                 {
-                    EventBus.Raise(e, this);
-                    EventBus.Raise(e, this);
-                    EventBus.Raise(e, this);
-                    EventBus.Raise(e, this);
-                    EventBus.Raise(e, this);
-                    EventBus.Raise(e, this);
-                    EventBus.Raise(e, this);
-                    EventBus.Raise(e, this);
+                    EventBus.Publish(e, this);
+                    EventBus.Publish(e, this);
+                    EventBus.Publish(e, this);
+                    EventBus.Publish(e, this);
+                    EventBus.Publish(e, this);
+                    EventBus.Publish(e, this);
+                    EventBus.Publish(e, this);
+                    EventBus.Publish(e, this);
                 }
             }
             w.Stop();
@@ -122,15 +122,15 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
         {
             bool secondCall = false;
             bool exceptionRaised = false;
-            WorkflowStepDelegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
-            WorkflowStepDelegate<TestEvent> secondHandler = (p) => { secondCall = true; };
+            Delegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
+            Delegate<TestEvent> secondHandler = (p) => { secondCall = true; };
 
             EventBus.Subscribe<TestEvent>(firstHandler.AddOnFail<TestEvent, Exception>(secondHandler));
 
 
             EventBus.Subscribe<Exception>((param) => { exceptionRaised = true; });
 
-            EventBus.Raise(new TestEvent(), this);
+            EventBus.Publish(new TestEvent(), this);
 
             Assert.IsTrue(secondCall);
             Assert.IsTrue(exceptionRaised);
@@ -143,8 +143,8 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
             bool secondCall = false;
             bool exceptionRaised = false;
 
-            WorkflowStepDelegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
-            WorkflowStepDelegate<TestEvent> secondHandler = (p) => { secondCall = true; };
+            Delegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
+            Delegate<TestEvent> secondHandler = (p) => { secondCall = true; };
 
             EventBus.Subscribe<TestEvent>(
                 firstHandler.AddOnFail<TestEvent, Exception>(secondHandler, false)
@@ -152,7 +152,7 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
 
             EventBus.Subscribe<Exception>((param) => { exceptionRaised = true; });
 
-            EventBus.Raise(new TestEvent(), this);
+            EventBus.Publish(new TestEvent(), this);
 
             Assert.IsTrue(secondCall);
             Assert.IsFalse(exceptionRaised);
@@ -164,14 +164,14 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
         {
             bool secondCall = false;
 
-            WorkflowStepDelegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
-            WorkflowStepDelegate<TestEvent> secondHandler = (p) => { secondCall = true; };
+            Delegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
+            Delegate<TestEvent> secondHandler = (p) => { secondCall = true; };
 
             EventBus.Subscribe<TestEvent>(
                 firstHandler.AddOnFail<TestEvent, ArgumentException>(secondHandler)
             );
 
-            EventBus.Raise(new TestEvent(), this);
+            EventBus.Publish(new TestEvent(), this);
 
             Assert.IsFalse(secondCall);
         }
@@ -184,13 +184,13 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
             EventBus.Subscribe<NoSubscribers>((p) => e = p);
 
             TestEvent t = new TestEvent();
-            EventBus.Raise(t, this);
+            EventBus.Publish(t, this);
             Assert.IsNotNull(e);
             Assert.AreEqual(t, e.LastEvent);
             Assert.AreEqual(1, e.Counter);
 
             ChildEvent c = new ChildEvent();
-            EventBus.Raise<TestEvent>(c, this);
+            EventBus.Publish<TestEvent>(c, this);
             Assert.IsNotNull(e);
             Assert.AreEqual(c, e.LastEvent);
             Assert.AreEqual(2, e.Counter);
@@ -201,10 +201,10 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
         {
             int counter = 0;
             EventBus.Subscribe<TestEvent>(a => counter += 2);
-            EventBus.Subscribe<TestEvent>(a => { throw new AbortWorkflowException(); });
+            EventBus.Subscribe<TestEvent>(a => { throw new AbortExecutionException(); });
             EventBus.Subscribe<TestEvent>(a => counter += 3);
 
-            EventBus.Raise(new TestEvent(), this);
+            EventBus.Publish(new TestEvent(), this);
 
             Assert.AreEqual(2, counter);
         }

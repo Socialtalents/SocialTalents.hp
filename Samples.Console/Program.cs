@@ -13,6 +13,7 @@ namespace Samples.Console
         {
             SimpulateIoc();
 
+            #region Request subscription mode from user
             string mode = null;
 
             while (mode == null)
@@ -37,8 +38,8 @@ namespace Samples.Console
                         break;
                 }
             }
+            #endregion
             
-
             while(true)
             {
                 string userEmail = Output.Question("Enter user email:");

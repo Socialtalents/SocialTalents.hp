@@ -12,15 +12,15 @@ SocialTalents.Hp.UnitTests - Tests for all SocialTalents.Hp.* projects
 
 ## Usage
 
-### Raise events
+### Publish events
 
-```EventBus.Subscribe<TEvent>(eventInstance, sender);```
+```EventBus.Publish<TEvent>(eventInstance, sender);```
 
 TEvent - identify workflow queue
 
 eventInstance - event to handle (may be child class of TEvent)
 
-sender - (ussually this) Any class which declares ICanRaise< TEvent >  interface
+sender - (ussually this) Any class which declares ICanPublish< TEvent >  interface
 
 ### Subscribing to events
 

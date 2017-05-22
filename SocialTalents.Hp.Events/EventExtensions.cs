@@ -7,7 +7,7 @@ namespace SocialTalents.Hp.Events
 {
     public static class EventExtensions
     {
-        public static WorkflowStepDelegate<TEvent> Async<TEvent>(this WorkflowStepDelegate<TEvent> handler)
+        public static Delegate<TEvent> Async<TEvent>(this Delegate<TEvent> handler)
         {
             return (param) =>
             {
@@ -15,40 +15,40 @@ namespace SocialTalents.Hp.Events
             };
         }
 
-        public static WorkflowStepDelegate<TEvent> Async<TEvent>(this ICanHandle<TEvent> handler)
+        public static Delegate<TEvent> Async<TEvent>(this ICanHandle<TEvent> handler)
         {
-            WorkflowStepDelegate<TEvent> handlerAsDelegate = handler.Handle;
+            Delegate<TEvent> handlerAsDelegate = handler.Handle;
             return Async<TEvent>(handlerAsDelegate);
         }
 
         /// <summary>
         /// Subscribe to event with ICanHandle interface. If it fails with TException - onFail is called
         /// </summary>
-        public static WorkflowStepDelegate<TEvent> AddOnFail<TEvent, TException>(this ICanHandle<TEvent> handler, ICanHandle<TEvent> onFail, bool raiseException = true) where TException : Exception
+        public static Delegate<TEvent> AddOnFail<TEvent, TException>(this ICanHandle<TEvent> handler, ICanHandle<TEvent> onFailHandler, bool publishException = true) where TException : Exception
         {
-            return AddOnFail<TEvent, TException>(handler.Handle, onFail.Handle, raiseException);
+            return AddOnFail<TEvent, TException>(handler.Handle, onFailHandler.Handle, publishException);
         }
         
         /// <summary>
         /// Subscribe to event with ICanHandle interface. If it fails with TException - onFail is called
         /// </summary>
-        public static WorkflowStepDelegate<TEvent> AddOnFail<TEvent, TException>(this WorkflowStepDelegate<TEvent> handler, ICanHandle<TEvent> onFail, bool raiseException = true) where TException : Exception
+        public static Delegate<TEvent> AddOnFail<TEvent, TException>(this Delegate<TEvent> handler, ICanHandle<TEvent> onFailHandler, bool publishException = true) where TException : Exception
         {
-            return AddOnFail<TEvent, TException>(handler, onFail.Handle, raiseException);
+            return AddOnFail<TEvent, TException>(handler, onFailHandler.Handle, publishException);
         }
 
         /// <summary>
         /// Subscribe to event with ICanHandle interface. If it fails with TException - onFail is called
         /// </summary>
-        public static WorkflowStepDelegate<TEvent> AddOnFail<TEvent, TException>(this ICanHandle<TEvent> handler, WorkflowStepDelegate<TEvent> onFail, bool raiseException = true) where TException : Exception
+        public static Delegate<TEvent> AddOnFail<TEvent, TException>(this ICanHandle<TEvent> handler, Delegate<TEvent> onFailHandler, bool publishException = true) where TException : Exception
         {
-            return AddOnFail<TEvent, TException>(handler.Handle, onFail, raiseException);
+            return AddOnFail<TEvent, TException>(handler.Handle, onFailHandler, publishException);
         }
 
         /// <summary>
         /// Subscribe to event with ICanHandle interface. If it fails with TException - onFail is called
         /// </summary>
-        public static WorkflowStepDelegate<TEvent> AddOnFail<TEvent, TException>(this WorkflowStepDelegate<TEvent> handler, WorkflowStepDelegate<TEvent> onFail, bool raiseException = true) where TException : Exception
+        public static Delegate<TEvent> AddOnFail<TEvent, TException>(this Delegate<TEvent> handler, Delegate<TEvent> onFailHandler, bool publishException = true) where TException : Exception
         {
             return (param) =>
             {
@@ -58,11 +58,11 @@ namespace SocialTalents.Hp.Events
                 }
                 catch (TException ex)
                 {
-                    if (raiseException)
+                    if (publishException)
                     {
-                        EventBus.Raise<Exception>(ex, new SenderStub<Exception>());
+                        EventBus.Publish<Exception>(ex, new SenderStub<Exception>());
                     }
-                    onFail(param);
+                    onFailHandler(param);
                 }
             };
         }

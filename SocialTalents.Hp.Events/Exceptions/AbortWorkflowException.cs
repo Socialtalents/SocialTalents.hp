@@ -4,12 +4,12 @@ namespace SocialTalents.Hp.Events.Exceptions
 {
 
     /// <summary>
-    /// Raise handler method can throw this exception to prevent further execution of event subscribers chain
+    /// Event handler method can throw this exception to prevent further execution of event subscribers chain
     /// </summary>
-    public class AbortWorkflowException : Exception
+    public class AbortExecutionException : Exception
     {
-        public AbortWorkflowException() { }
-        public AbortWorkflowException(string message) : base(message) { }
-        public AbortWorkflowException(string message, Exception inner) : base(message, inner) { }
+        public AbortExecutionException() { }
+        public AbortExecutionException(string message) : base(message) { }
+        public AbortExecutionException(string message, Exception inner) : base(message, inner) { }
     }
 }
