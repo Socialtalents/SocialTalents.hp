@@ -2,6 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.2</TargetFramework>
+    <PackageIconUrl>http://www.socialtalents.com/favicon-96x96.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Socialtalents/SocialTalents.hp</RepositoryUrl>
+    <PackageTags>Events Subscribe Publish</PackageTags>
+    <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
+    <Copyright>2014</Copyright>
+    <Authors>SocialTalents Software Inc</Authors>
+    <Company>SocialTalents Software Inc</Company>
+    <Product>SocialTalents.Hp Framework</Product>
+    <Description>Subscribe/Publish events implementation with customizable execution patterns.</Description>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <ApplicationIcon></ApplicationIcon>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
 </Project>

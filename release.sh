@@ -1,0 +1,1 @@
+./nuget push $(pwd)/SocialTalents.Hp.Events/bin/debug/$(ls SocialTalents.Hp.Events/bin/debug/ -t1 |  head -n 1) $(cat ../hp/nugetapi.txt) -Source https://www.nuget.org/api/v2/package
