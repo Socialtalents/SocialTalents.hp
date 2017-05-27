@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.1</TargetFramework>
+    <TargetFramework>netstandard1.2</TargetFramework>
     <PackageIconUrl>http://www.socialtalents.com/favicon-96x96.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/Socialtalents/SocialTalents.hp</RepositoryUrl>
     <PackageTags>Events Subscribe Publish</PackageTags>
@@ -14,14 +14,19 @@
 See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</Description>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <ApplicationIcon></ApplicationIcon>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
     <Version>1.0.1</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard1.1\SocialTalents.Hp.Events.xml</DocumentationFile>
-    <OutputPath>bin\Debug\netstandard1.1\</OutputPath>
+    <DocumentationFile>bin\Debug\netstandard1.2\SocialTalents.Hp.Events.xml</DocumentationFile>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETSTANDARD1_2</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard1.2\SocialTalents.Hp.Events.xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>
