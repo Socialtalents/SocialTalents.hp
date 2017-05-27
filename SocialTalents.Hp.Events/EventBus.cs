@@ -9,6 +9,10 @@ namespace SocialTalents.Hp.Events
     public delegate void Delegate<TArg>(TArg param);
     public delegate DateTime ExecutionTimeCalculator();
 
+    /// <summary>
+    /// EventBus used to Subcsribe to handle events and Publish them
+    /// See https://github.com/Socialtalents/SocialTalents.hp for sources and samples
+    /// </summary>
     public static class EventBus
     {
         private static ConcurrentDictionary<Type, object> _subscribers = new ConcurrentDictionary<Type, object>();
@@ -48,6 +52,13 @@ namespace SocialTalents.Hp.Events
             Subscribe<TEvent>(handler.Handle);
         }
 
+        /// <summary>
+        /// Publish event of type TEvent for handling.
+        /// When there are no subscribers for this event NoSubscribers event raised
+        /// </summary>
+        /// <typeparam name="TEvent"></typeparam>
+        /// <param name="eventInstance">Event to publish</param>
+        /// <param name="sender">sender instance</param>
         public static void Publish<TEvent>(TEvent eventInstance, ICanPublish<TEvent> sender)
         {
             if (sender == null)

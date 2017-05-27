@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		Build.md = Build.md
 		ReadMe.md = ReadMe.md
+		release.sh = release.sh
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialTalents.Hp.Events", "SocialTalents.Hp.Events\SocialTalents.Hp.Events.csproj", "{9B8EDDD6-EAFE-4C56-BCCE-BA97EDCC8CD3}"
