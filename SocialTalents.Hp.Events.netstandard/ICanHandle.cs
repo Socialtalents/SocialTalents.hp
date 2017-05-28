@@ -12,5 +12,5 @@ namespace SocialTalents.Hp.Events
     public interface ICanHandle<T>
     {
         void Handle(T param);
-    } 
+    }
 }

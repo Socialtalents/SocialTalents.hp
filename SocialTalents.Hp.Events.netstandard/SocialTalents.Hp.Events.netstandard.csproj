@@ -18,8 +18,9 @@ See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</D
     <AssemblyVersion>1.0.2.0</AssemblyVersion>
     <FileVersion>1.0.2.0</FileVersion>
     <Version>1.0.2</Version>
-    <PreBuildEvent>xcopy $(SolutionDir)SocialTalents.Hp.Events.net45\*.cs $(SolutionDir)\SocialTalents.Hp.Events.netstandard /e
-del $(SolutionDir)SocialTalents.Hp.Events.netstandard\Properties\AssemblyInfo.cs</PreBuildEvent>
+    <PreBuildEvent>del /s $(SolutionDir)\SocialTalents.Hp.Events.netstandard\*.cs
+xcopy $(SolutionDir)\SocialTalents.Hp.Events.net45\*.cs $(SolutionDir)\SocialTalents.Hp.Events.netstandard /e /y
+del $(SolutionDir)\SocialTalents.Hp.Events.netstandard\Properties\AssemblyInfo.cs</PreBuildEvent>
     <PackageId>SocialTalents.Hp.Events.netstandard</PackageId>
   </PropertyGroup>
 
