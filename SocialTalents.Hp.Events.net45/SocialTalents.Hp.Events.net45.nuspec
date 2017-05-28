@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SocialTalents.Hp.Events</id>
+    <version>1.0.2</version>
+    <title>SocialTalents.Hp.Events for .net 4.5.1+</title>
+    <authors>SocialTalents Software Inc</authors>
+    <owners>SocialTalents Software Inc</owners>
+    <!--<licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>-->
+    <projectUrl>https://github.com/Socialtalents/SocialTalents.hp</projectUrl>
+    <iconUrl>http://www.socialtalents.com/favicon-96x96.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      Subscribe/Publish events implementation with customizable execution patterns.
+      See https://github.com/Socialtalents/SocialTalents.hp for sources and samples
+    </description>
+    <releaseNotes>
+      Separated .net standard version
+      See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</releaseNotes>
+    <copyright>Copyright 2014</copyright>
+    <tags>Events Subscribe Publish</tags>
+  </metadata>
+</package>

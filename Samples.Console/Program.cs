@@ -70,7 +70,7 @@ namespace Samples.Console
             emailService.SuccessRate = 40;
             EventBus.Subscribe(
                 emailService.AddOnFail<UserRegistered, Exception>(
-                    (userRegistered) => Output.Error("Use alternative method to notify user " + userRegistered.User.Email)
+                    (userRegistered) => Output.Error("Using alternative method to notify user " + userRegistered.User.Email)
                 )
                 // also, let's make it async
                 .Async()

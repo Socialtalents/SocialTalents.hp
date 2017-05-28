@@ -58,9 +58,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SocialTalents.Hp.Events\SocialTalents.Hp.Events.csproj">
-      <Project>{9b8eddd6-eafe-4c56-bcce-ba97edcc8cd3}</Project>
-      <Name>SocialTalents.Hp.Events</Name>
+    <ProjectReference Include="..\SocialTalents.Hp.Events.net45\SocialTalents.Hp.Events.net45.csproj">
+      <Project>{60657264-183f-4cc9-afa4-d925a7b76197}</Project>
+      <Name>SocialTalents.Hp.Events.net45</Name>
     </ProjectReference>
     <ProjectReference Include="..\SocialTalents.Hp.MongoDb\SocialTalents.Hp.MongoDb.csproj">
       <Project>{22958f8b-d839-4550-8d8b-9bc5190a610d}</Project>

@@ -4,7 +4,9 @@ HP = means 'HelPer'
 
 Samples.Console - Sample implementation
 
-SocialTalents.Hp.Events - Inversion of Events handing
+SocialTalents.Hp.Events.net45 - Inversion of Events handing (for .net Framework 4.5+)
+
+SocialTalents.Hp.Events.nettandard - Copy for .netStandard (copis all files in pre-build step)
 
 SocialTalents.Hp.MongoDb - Helper classes for mongodb (TBD)
 

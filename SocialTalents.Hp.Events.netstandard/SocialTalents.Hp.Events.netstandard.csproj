@@ -4,19 +4,23 @@
     <TargetFramework>netstandard1.2</TargetFramework>
     <PackageIconUrl>http://www.socialtalents.com/favicon-96x96.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/Socialtalents/SocialTalents.hp</RepositoryUrl>
-    <PackageTags>Events Subscribe Publish</PackageTags>
-    <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
+    <PackageTags>Events Subscribe Publish netstandard</PackageTags>
+    <PackageReleaseNotes>Separated .net standard version 
+See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</PackageReleaseNotes>
     <Copyright>2014</Copyright>
     <Authors>SocialTalents Software Inc</Authors>
     <Company>SocialTalents Software Inc</Company>
-    <Product>SocialTalents.Hp Framework</Product>
+    <Product>SocialTalents.Hp.Events for netStandard</Product>
     <Description>Subscribe/Publish events implementation with customizable execution patterns.
 See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</Description>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <ApplicationIcon></ApplicationIcon>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
-    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
+    <Version>1.0.2</Version>
+    <PreBuildEvent>xcopy $(SolutionDir)SocialTalents.Hp.Events.net45\*.cs $(SolutionDir)\SocialTalents.Hp.Events.netstandard /e
+del $(SolutionDir)SocialTalents.Hp.Events.netstandard\Properties\AssemblyInfo.cs</PreBuildEvent>
+    <PackageId>SocialTalents.Hp.Events.netstandard</PackageId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

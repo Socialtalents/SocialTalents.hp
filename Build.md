@@ -4,7 +4,7 @@
 
 1. Download Latest Windows x86 Commandline to repository root (https://dist.nuget.org/index.html)
 
-2. Bump Version numbers for assemblies changed:
+2. Bump Version numbers for assemblies changed (both net45 and netstandard):
 X.Y.Z: 
 A change in X is a breaking change
 A change in Y adds functionality but is non-breaking
