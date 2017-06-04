@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Samples.Console.Services
 {
     public class EmailService : 
-        // Interfaces is best way to declare which events service can handle and raise
+        // Interfaces is best way to declare which events service can handle and publish
         ICanHandle<UserRegistered>, 
         ICanPublish<Exception>
     {

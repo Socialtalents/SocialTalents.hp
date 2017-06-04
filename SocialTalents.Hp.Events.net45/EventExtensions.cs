@@ -16,12 +16,15 @@ namespace SocialTalents.Hp.Events
         /// </summary>
         /// <typeparam name="TEvent"></typeparam>
         /// <param name="handler"></param>
+        /// <param name="eventBusService">eventBusService to use, EventBus.Default if null</param>
         /// <returns></returns>
-        public static Delegate<TEvent> Async<TEvent>(this Delegate<TEvent> handler)
+        public static Delegate<TEvent> Async<TEvent>(this Delegate<TEvent> handler, EventBusService eventBusService = null)
         {
             return (param) =>
             {
-                handler.BeginInvoke(param, new AsyncCallback<TEvent>(handler).Callback, null);
+                handler.BeginInvoke(param, new AsyncCallback<TEvent>(handler,
+                    eventBusService == null ? EventBus.Default : eventBusService)
+                    .Callback, null);
             };
         }
 

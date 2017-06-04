@@ -35,26 +35,26 @@ namespace SocialTalents.Hp.UnitTests.Events
         public void OnFail_MatchingException_OnFailCalled()
         {
             bool secondCall = false;
-            bool exceptionRaised = false;
+            bool exceptionPublished = false;
             Delegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
             Delegate<TestEvent> secondHandler = (p) => { secondCall = true; };
 
-            EventBus.Subscribe<TestEvent>(firstHandler.AddOnFail<TestEvent, Exception>(secondHandler, OnException.RaiseException));
+            EventBus.Subscribe<TestEvent>(firstHandler.AddOnFail<TestEvent, Exception>(secondHandler, OnException.PublishExceptionToDefaultEventBus));
 
 
-            EventBus.Subscribe<Exception>((param) => { exceptionRaised = true; });
+            EventBus.Subscribe<Exception>((param) => { exceptionPublished = true; });
 
             EventBus.Publish(new TestEvent(), this);
 
             Assert.IsTrue(secondCall);
-            Assert.IsTrue(exceptionRaised);
+            Assert.IsTrue(exceptionPublished);
         }
 
         [TestMethod]
         public void OnFail_ExceptionMatchButNotReThrown_HappyCase()
         {
             bool secondCall = false;
-            bool exceptionRaised = false;
+            bool exceptionPublished = false;
 
             Delegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
             Delegate<TestEvent> secondHandler = (p) => { secondCall = true; };
@@ -63,12 +63,12 @@ namespace SocialTalents.Hp.UnitTests.Events
                 firstHandler.AddOnFail<TestEvent, Exception>(secondHandler)
             );
 
-            EventBus.Subscribe<Exception>((param) => { exceptionRaised = true; });
+            EventBus.Subscribe<Exception>((param) => { exceptionPublished = true; });
 
             EventBus.Publish(new TestEvent(), this);
 
             Assert.IsTrue(secondCall);
-            Assert.IsFalse(exceptionRaised);
+            Assert.IsFalse(exceptionPublished);
         }
 
         [TestMethod]

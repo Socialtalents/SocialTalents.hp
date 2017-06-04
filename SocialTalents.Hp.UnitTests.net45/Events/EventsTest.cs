@@ -29,7 +29,7 @@ namespace SocialTalents.Hp.UnitTest.Events
         [ExpectedException(typeof(InvalidOperationException))]
         public void Events_MaxSubscriptions_ValidationFails()
         {
-            for (int i = 0; i < EventBus.MaxSubscriptionsPerEventType + 1; i++)
+            for (int i = 0; i < EventBus.Default.MaxSubscriptionsPerEventType + 1; i++)
                 EventBus.Subscribe<TestEvent>(
                     (result) => { }
                 );

@@ -6,12 +6,14 @@ namespace SocialTalents.Hp.Events.Internal
 {
     public class AsyncCallback<TEvent> : ICanPublish<Exception>
     {
-        public AsyncCallback(Delegate<TEvent> handler)
+        public AsyncCallback(Delegate<TEvent> handler, EventBusService eventBusService)
         {
             _handler = handler;
+            _eventBusService = eventBusService;
         }
 
         Delegate<TEvent> _handler;
+        EventBusService _eventBusService;
 
         public void Callback(IAsyncResult result)
         {
@@ -21,7 +23,7 @@ namespace SocialTalents.Hp.Events.Internal
             }
             catch (Exception ex)
             {
-                EventBus.Publish<Exception>(ex, this);
+                _eventBusService.Publish<Exception>(ex, this);
             }
         }
     }

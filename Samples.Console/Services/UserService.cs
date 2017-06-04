@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Samples.Console.Services
 {
     public class UserService : 
-        // Mark service with ICanRaise interface to keep event visible for consumers 
+        // Mark service with ICanPublish interface to keep event visible for consumers 
         ICanPublish<UserRegistered>
     {
         public void RegisterUser(User user)

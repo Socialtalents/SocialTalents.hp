@@ -18,13 +18,13 @@ namespace SocialTalents.Hp.Events
 
         public static DelegateInterface DoNothing;
         public static DelegateInterface ThrowException;
-        public static DelegateInterface RaiseException;
+        public static DelegateInterface PublishExceptionToDefaultEventBus;
 
         static OnException()
         {
             DoNothing = (Exception e) => { };
             ThrowException = (Exception e) => throw e;
-            RaiseException = (Exception e) => EventBus.Publish<Exception>(e, new SenderStub<Exception>());
+            PublishExceptionToDefaultEventBus = (Exception e) => EventBus.Publish<Exception>(e, new SenderStub<Exception>());
         }
     }
 }

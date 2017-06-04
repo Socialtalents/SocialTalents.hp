@@ -55,6 +55,7 @@
     <Compile Include="Events\Internal\TestEvent.cs" />
     <Compile Include="Events\OnFailTests.cs" />
     <Compile Include="Events\RetryTests.cs" />
+    <Compile Include="Events\SingletonTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
