@@ -38,12 +38,14 @@
     <Compile Include="EventBus.cs" />
     <Compile Include="EventExtensions.cs" />
     <Compile Include="Exceptions\AbortWorkflowException.cs" />
+    <Compile Include="Exceptions\RetryFailedException.cs" />
     <Compile Include="ICanHandle.cs" />
     <Compile Include="ICanPublish.cs" />
     <Compile Include="Internal\AsyncCallback.cs" />
     <Compile Include="Internal\NoSubscribers.cs" />
     <Compile Include="Internal\SenderStub.cs" />
     <Compile Include="Internal\SubscribersList.cs" />
+    <Compile Include="OnException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,10 @@
 # SocialTalents HP - Build instructions
 
+## Useful links
+
+Naming standards for unit tests
+http://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html
+
 ## Publish to NuGet
 
 1. Download Latest Windows x86 Commandline to repository root (https://dist.nuget.org/index.html)

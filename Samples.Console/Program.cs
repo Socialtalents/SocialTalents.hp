@@ -21,6 +21,7 @@ namespace Samples.Console
                 Output.Message("i - In Proc handling");
                 Output.Message("a - Async handling");
                 Output.Message("f - Failure handling");
+                //Output.Message("r - retry handling");
                 mode = Output.Question("Please select mode:").ToLower();
 
                 switch (mode)
@@ -35,6 +36,9 @@ namespace Samples.Console
                         break;
                     case "f":
                         SetupEventsWithOnFail();
+                        break;
+                    case "r":
+                        SetupEventsWithRetry();
                         break;
                 }
             }
@@ -75,6 +79,20 @@ namespace Samples.Console
                 // also, let's make it async
                 .Async()
             );
+
+            EventBus.Subscribe<Exception>((e) => Output.Error("Exception discovered in event handling:" + e.Message));
+        }
+
+        private static void SetupEventsWithRetry()
+        {
+            // if handler fail we can do something else
+            emailService.SuccessRate = 40;
+            // Waiting for nuget to index package
+            /*EventBus.Subscribe(
+                emailService.Retry<UserRegistered>(5)
+                // also, let's make it async
+                .Async()
+            );*/
 
             EventBus.Subscribe<Exception>((e) => Output.Error("Exception discovered in event handling:" + e.Message));
         }

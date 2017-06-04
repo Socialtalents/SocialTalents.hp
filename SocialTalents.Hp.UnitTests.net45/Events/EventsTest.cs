@@ -1,19 +1,18 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SocialTalents.Hp.Events;
-using SocialTalents.Hp.Events.Internal;
 using SocialTalents.Hp.Events.Exceptions;
+using SocialTalents.Hp.Events.Internal;
 using SocialTalents.Hp.UnitTest.Events.Internal;
-using System.Threading;
+using System;
 using System.Diagnostics;
 
-namespace SocialTalents.Hp.Events.UnitTest.Events
+namespace SocialTalents.Hp.UnitTest.Events
 {
     [TestClass]
     public class EventsTest : ICanPublish<TestEvent>
     {
         [TestMethod]
-        public void Req_MultipleSubsriptions()
+        public void Events_MultipleSubscribtions_HappyCase()
         {
             bool subscription1 = false;
             bool subscription2 = false;
@@ -25,53 +24,10 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
             Assert.IsTrue(subscription1);
             Assert.IsTrue(subscription2);
         }
-
-        [TestMethod]
-        public void Req_AsyncSubscription_HappyCase()
-        {
-            bool asyncSubscription = false;
-            Exception ex = null;
-            EventBus.Subscribe<Exception>((e) => ex = e);
-            EventBus.Subscribe<TestEvent>(
-                EventExtensions.Async((TestEvent args) => { Thread.Sleep(1); asyncSubscription = true; })
-            );
-            EventBus.Publish<TestEvent>(new TestEvent(), this);
-            Assert.IsFalse(asyncSubscription);
-            waitFor(() => asyncSubscription);
-            Assert.IsNull(ex);
-        }
-
-        [TestMethod]
-        public void Req_AsyncSubscription_WithException()
-        {
-            bool asyncSubscription = false;
-            Exception ex = null;
-            EventBus.Subscribe<Exception>((e) => ex = e);
-            EventBus.Subscribe<TestEvent>(
-                EventExtensions.Async((TestEvent args) => { throw new InvalidTimeZoneException(); })
-            );
-            EventBus.Publish<TestEvent>(new TestEvent(), this);
-            Assert.IsFalse(asyncSubscription);
-
-            waitFor(() => ex != null);
-
-            Assert.IsFalse(asyncSubscription);
-            Assert.AreEqual(ex.GetType(), typeof(InvalidTimeZoneException));
-        }
-
-        private void waitFor(Func<bool> condition)
-        {
-            int loops = 0;
-            while (!condition() && loops < 100)
-            {
-                Thread.Sleep(10);
-                loops++;
-            }
-        }
-
+        
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void Req_CheckForWrongSubscriptions()
+        public void Events_MaxSubscriptions_ValidationFails()
         {
             for (int i = 0; i < EventBus.MaxSubscriptionsPerEventType + 1; i++)
                 EventBus.Subscribe<TestEvent>(
@@ -81,13 +37,13 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void Test_No_ICanRaise()
+        public void Events_NoSender_ValidationException()
         {
             EventBus.Publish(new EventArgs(), null);
         }
 
         [TestMethod]
-        public void Perf_BasicEventTest()
+        public void Events_Performance_AtLeastMillionOpPerSecond()
         {
             int counter = 0;
 
@@ -116,68 +72,9 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
             Console.WriteLine(string.Format("{0} op/sec, {1} total", operationsPerSecond, counter));
             Assert.IsTrue(operationsPerSecond > 1000000);
         }
-
+        
         [TestMethod]
-        public void Execute_Second_Step_When_First_Fails()
-        {
-            bool secondCall = false;
-            bool exceptionRaised = false;
-            Delegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
-            Delegate<TestEvent> secondHandler = (p) => { secondCall = true; };
-
-            EventBus.Subscribe<TestEvent>(firstHandler.AddOnFail<TestEvent, Exception>(secondHandler));
-
-
-            EventBus.Subscribe<Exception>((param) => { exceptionRaised = true; });
-
-            EventBus.Publish(new TestEvent(), this);
-
-            Assert.IsTrue(secondCall);
-            Assert.IsTrue(exceptionRaised);
-        }
-
-
-        [TestMethod]
-        public void Execute_Second_Step_When_First_Fails_Without_Exception()
-        {
-            bool secondCall = false;
-            bool exceptionRaised = false;
-
-            Delegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
-            Delegate<TestEvent> secondHandler = (p) => { secondCall = true; };
-
-            EventBus.Subscribe<TestEvent>(
-                firstHandler.AddOnFail<TestEvent, Exception>(secondHandler, false)
-            );
-
-            EventBus.Subscribe<Exception>((param) => { exceptionRaised = true; });
-
-            EventBus.Publish(new TestEvent(), this);
-
-            Assert.IsTrue(secondCall);
-            Assert.IsFalse(exceptionRaised);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void Execute_Second_Step_When_First_Fails_OptionB()
-        {
-            bool secondCall = false;
-
-            Delegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
-            Delegate<TestEvent> secondHandler = (p) => { secondCall = true; };
-
-            EventBus.Subscribe<TestEvent>(
-                firstHandler.AddOnFail<TestEvent, ArgumentException>(secondHandler)
-            );
-
-            EventBus.Publish(new TestEvent(), this);
-
-            Assert.IsFalse(secondCall);
-        }
-
-        [TestMethod]
-        public void No_Subscribers_Returned()
+        public void NoSubscribers_EventAndCounterWorks()
         {
             NoSubscribers e = null;
 
@@ -197,7 +94,7 @@ namespace SocialTalents.Hp.Events.UnitTest.Events
         }
         
         [TestMethod]
-        public void RaiseAbortException()
+        public void Events_AbortException_BreaksExecutionSequence()
         {
             int counter = 0;
             EventBus.Subscribe<TestEvent>(a => counter += 2);

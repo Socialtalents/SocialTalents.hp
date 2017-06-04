@@ -7,8 +7,8 @@
     <ProjectGuid>{7DAA8209-5BBE-4549-828D-00F58E33E265}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SocialTalents.Hp.EventBus.UnitTest</RootNamespace>
-    <AssemblyName>SocialTalents.Hp.EventBus.UnitTest</AssemblyName>
+    <RootNamespace>SocialTalents.Hp.UnitTests</RootNamespace>
+    <AssemblyName>SocialTalents.Hp.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -49,9 +49,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\AsyncTests.cs" />
     <Compile Include="Events\EventsTest.cs" />
     <Compile Include="Events\Internal\ChildEvent.cs" />
     <Compile Include="Events\Internal\TestEvent.cs" />
+    <Compile Include="Events\OnFailTests.cs" />
+    <Compile Include="Events\RetryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

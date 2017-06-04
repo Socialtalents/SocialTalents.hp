@@ -59,11 +59,15 @@ EventBus.Subscribe(handler.Async());
 ```
 Fail strategy:
 ```
-EventBus.Strategy(handler.AddOnFail<TEvent, TException>(onFailHandler));
+EventBus.Subscribe(handler.AddOnFail<TEvent, TException>(onFailHandler));
+```
+Retry strategy (5 times, with 30 seconds delay):
+```
+EventBus.Subscribe(handler.Retry(5, TimeSpan.FromSeconds(30)));
 ```
 Strategies can be combined, for example OnFail with Async:
 ```
-EventBus.Strategy(handler.AddOnFail<TEvent, TException>(onFailHandler).Async());
+EventBus.Subscribe(handler.AddOnFail<TEvent, TException>(onFailHandler).Retry(5).Async());
 ```
 
 ## Requirements

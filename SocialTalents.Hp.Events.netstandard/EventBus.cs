@@ -11,7 +11,7 @@ namespace SocialTalents.Hp.Events
 
     /// <summary>
     /// EventBus used to Subcsribe to handle events and Publish them
-    /// See https://github.com/Socialtalents/SocialTalents.hp for sources and samples
+    /// Refer to https://github.com/Socialtalents/SocialTalents.hp for sources and samples
     /// </summary>
     public static class EventBus
     {
