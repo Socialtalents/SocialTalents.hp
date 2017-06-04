@@ -2,6 +2,7 @@
 using Samples.Console.Model;
 using Samples.Console.Services;
 using SocialTalents.Hp.Events;
+using SocialTalents.Hp.Events.Exceptions;
 using System;
 using System.Linq;
 
@@ -21,7 +22,7 @@ namespace Samples.Console
                 Output.Message("i - In Proc handling");
                 Output.Message("a - Async handling");
                 Output.Message("f - Failure handling");
-                //Output.Message("r - retry handling");
+                Output.Message("r - retry handling");
                 mode = Output.Question("Please select mode:").ToLower();
 
                 switch (mode)
@@ -74,7 +75,7 @@ namespace Samples.Console
             emailService.SuccessRate = 40;
             EventBus.Subscribe(
                 emailService.AddOnFail<UserRegistered, Exception>(
-                    (userRegistered) => Output.Error("Using alternative method to notify user " + userRegistered.User.Email)
+                    (userRegistered) => Output.Error("OnFail handler triggered to notify user " + userRegistered.User.Email)
                 )
                 // also, let's make it async
                 .Async()
@@ -86,13 +87,14 @@ namespace Samples.Console
         private static void SetupEventsWithRetry()
         {
             // if handler fail we can do something else
-            emailService.SuccessRate = 40;
-            // Waiting for nuget to index package
-            /*EventBus.Subscribe(
-                emailService.Retry<UserRegistered>(5)
+            emailService.SuccessRate = 25;
+            
+           EventBus.Subscribe(
+                // retry attempt to send email 3 times
+                emailService.Retry<UserRegistered, Exception>(3)
                 // also, let's make it async
                 .Async()
-            );*/
+            );
 
             EventBus.Subscribe<Exception>((e) => Output.Error("Exception discovered in event handling:" + e.Message));
         }
