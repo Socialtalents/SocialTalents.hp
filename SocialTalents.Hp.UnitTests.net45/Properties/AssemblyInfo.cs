@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Hp.EventBus.UnitTest")]
+[assembly: AssemblyProduct("Hp.EventBus.UnitTests")]
 [assembly: AssemblyCopyright("Copyright © SocialTalents.com 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

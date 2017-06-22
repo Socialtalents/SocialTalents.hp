@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SocialTalents.Hp.Events;
 using SocialTalents.Hp.Events.Exceptions;
-using SocialTalents.Hp.UnitTest.Events.Internal;
+using SocialTalents.Hp.UnitTests.Events.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;

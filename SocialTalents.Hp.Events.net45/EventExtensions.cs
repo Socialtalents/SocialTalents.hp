@@ -34,10 +34,10 @@ namespace SocialTalents.Hp.Events
         /// <typeparam name="TEvent"></typeparam>
         /// <param name="handler"></param>
         /// <returns></returns>
-        public static Delegate<TEvent> Async<TEvent>(this ICanHandle<TEvent> handler)
+        public static Delegate<TEvent> Async<TEvent>(this ICanHandle<TEvent> handler, EventBusService eventBusService = null)
         {
             Delegate<TEvent> handlerAsDelegate = handler.Handle;
-            return Async<TEvent>(handlerAsDelegate);
+            return Async<TEvent>(handlerAsDelegate, eventBusService);
         }
 
         /// <summary>

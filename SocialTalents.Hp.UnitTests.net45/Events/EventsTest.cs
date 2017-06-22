@@ -2,11 +2,11 @@
 using SocialTalents.Hp.Events;
 using SocialTalents.Hp.Events.Exceptions;
 using SocialTalents.Hp.Events.Internal;
-using SocialTalents.Hp.UnitTest.Events.Internal;
+using SocialTalents.Hp.UnitTests.Events.Internal;
 using System;
 using System.Diagnostics;
 
-namespace SocialTalents.Hp.UnitTest.Events
+namespace SocialTalents.Hp.UnitTests.Events
 {
     [TestClass]
     public class EventsTest : ICanPublish<TestEvent>
