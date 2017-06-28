@@ -14,6 +14,17 @@ namespace SocialTalents.Hp.UnitTests.Events
     public class EventQueueTest : ICanPublish<TestEvent>, ICanPublish<UniqueEvent>
     {
         [TestMethod]
+        public void Queue_ResultTest()
+        {
+            ProcessEventsResult result = new ProcessEventsResult();
+            DateTime started = result.Started;
+            result.Processed++;
+            Task.Delay(50).Wait();
+            Assert.AreEqual(started, result.Started);
+            Assert.AreEqual(1, result.Processed);
+        }
+
+        [TestMethod]
         public void Queue_ProcessEmpty()
         {
             InMemoryQueueRepository repository = new InMemoryQueueRepository();

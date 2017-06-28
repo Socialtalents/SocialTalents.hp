@@ -174,10 +174,10 @@ namespace SocialTalents.Hp.Events.Queue
             var result = _raiseMethodByType.GetOrAdd(declaredEventType,
                 (i) =>
                 {
-                    // получаем DelayedEvent<TEvent>
+                    // building QueuedEvent<declaredEventType>
                     Type genericType = typeof(QueuedEvent<>).MakeGenericType(Type.GetType(i));
 
-                    // Вызываем EventBus.Raise<DelayedEvent<TEvent>>(DelayedEvent)
+                    // lookup for EventBusService.Publish<QueuedEvent<declaredEventType>>(event, sender)
                     MethodInfo method = typeof(EventBusService).GetRuntimeMethods()
                         .Single(m => m.Name == "Publish" && m.GetParameters().Length == 2);
 

@@ -10,6 +10,6 @@ namespace SocialTalents.Hp.Events.Queue
     {
         public ProcessEventsResult() { }
         public int Processed { get; set; } = 0;
-        public DateTime Started { get; private set; } = DateTime.Now;
+        public DateTime Started { get; } = DateTime.Now;
     }
 }
