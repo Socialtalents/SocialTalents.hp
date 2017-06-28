@@ -89,11 +89,10 @@ namespace SocialTalents.Hp.UnitTests.Events
             bus.Publish(new TestEvent(), this);
 
             DateTime start = DateTime.Now;
-            for (int i = 0; i < 10; i++)
+            while(counter <= 3)
             {
-                var result = testService.ProcessEvents();
+                testService.ProcessEvents();
             }
-            Assert.AreEqual(3, counter);
             Assert.IsTrue(DateTime.Now.Subtract(start).TotalMilliseconds > 3 * backofIntervalMs);
         }
     }
