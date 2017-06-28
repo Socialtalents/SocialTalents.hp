@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace SocialTalents.Hp.Events.Queue
 {
-
+    /// <summary>
+    /// RetryNeededException thrown when we ask EventQueue to try again
+    /// </summary>
 #if !NETSTANDARD1_2
     [Serializable]
 #endif

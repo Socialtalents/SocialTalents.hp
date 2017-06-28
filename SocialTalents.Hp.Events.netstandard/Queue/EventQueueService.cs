@@ -7,28 +7,46 @@ using System.Reflection;
 namespace SocialTalents.Hp.Events.Queue
 {
     /// <summary>
-    /// Store events in memory and process them syncronously
+    /// Store events in queue and process them syncronously
     /// </summary>
-    public class EventQueueService : IEventQueueService
+    public class EventQueueService
     {
         protected IEventQueueRepository _repository;
         protected EventBusService _eventBusService;
+
         public EventQueueService(IEventQueueRepository repository, EventBusService eventBusService = null)
         {
             _repository = repository;
             _eventBusService = eventBusService == null ? EventBus.Default : eventBusService;
         }
 
-        public virtual Delegate<TEvent> Enque<TEvent>()
+        /// <summary>
+        /// handler to enque event when it published
+        /// </summary>
+        /// <typeparam name="TEvent"></typeparam>
+        /// <returns></returns>
+        public Delegate<TEvent> Enque<TEvent>()
         {
             return Enque<TEvent>(TimeSpan.Zero);
         }
 
+        /// <summary>
+        /// Handler to enque event when it published to be handled after some interval
+        /// </summary>
+        /// <typeparam name="TEvent"></typeparam>
+        /// <param name="handleAfter"></param>
+        /// <returns></returns>
         public virtual Delegate<TEvent> Enque<TEvent>(TimeSpan handleAfter)
         {
             return (TEvent e) => AddEvent(e, typeof(TEvent), handleAfter);
         }
         
+        /// <summary>
+        /// Use repository to build new QueueItem and fill it with various data
+        /// </summary>
+        /// <param name="eventInstance"></param>
+        /// <param name="queueType"></param>
+        /// <param name="handleAfter"></param>
         protected virtual void AddEvent(object eventInstance, Type queueType, TimeSpan handleAfter) 
         {
             var item = _repository.BuildNewItem(eventInstance);
@@ -56,10 +74,20 @@ namespace SocialTalents.Hp.Events.Queue
             }
         }
 
-        public TimeSpan ProcessingTimeLimit{ get; set; } = TimeSpan.FromSeconds(30);
+        /// <summary>
+        /// Default timeout interval for ProcessEvents
+        /// </summary>
+        public TimeSpan ProcessingTimeLimit { get; set; } = TimeSpan.FromSeconds(30);
+        /// <summary>
+        /// Default portion size to read from queue
+        /// </summary>
         public int PortionSize { get; set; } = 50;
 
-        public ProcessEventsResult ProcessEvents()
+        /// <summary>
+        /// Process events from queue till queue is empty or ProcessingTimeLimit hits 
+        /// </summary>
+        /// <returns>Statistics run</returns>
+        public virtual ProcessEventsResult ProcessEvents()
         {
             ProcessEventsResult result = onBuildProcessEventsResult();
 
@@ -71,44 +99,66 @@ namespace SocialTalents.Hp.Events.Queue
                 {
                     if (DateTime.Now.Subtract(result.Started).CompareTo(ProcessingTimeLimit) >= 0)
                         break;
-
-                    MethodInfo genericMethod = GetPublishMethodInfo(item.DeclaringEventType);
-                    object typedEvent = BuildGenericQueueEvent(item);
-                    object sender = BuildSender(item.DeclaringEventType);
-                    try
-                    {
-                        genericMethod.Invoke(_eventBusService, new[] { typedEvent, sender });
-                        onEventHandled(item);    
-                    }
-                    catch (TargetInvocationException ex)
-                    {
-                        RetryNeededException retry = ex.InnerException as RetryNeededException;
-                        if (retry != null)
-                        {
-                            onEventRetried(item, retry);
-                        }
-                        else
-                        {
-                            onEventFailed(item, ex.InnerException);
-                        }
-                    }
+                    onProcessQueueItem(item);
                     result.Processed++;
                 }
                 if (itemsPortion.Count() < PortionSize) { break; }
             }
-            return onProcessEventsCompleted(result);
+            return result;
         }
 
-        private void onEventFailed(IQueueItem item, Exception ex)
+        /// <summary>
+        /// Thos method used to publish event and handle exception, if happened
+        /// </summary>
+        /// <param name="item"></param>
+        protected virtual void onProcessQueueItem(IQueueItem item)
+        {
+            MethodInfo genericMethod = GetPublishMethodInfo(item.DeclaringEventType);
+            object typedEvent = BuildGenericQueueEvent(item);
+            object sender = BuildSender(item.DeclaringEventType);
+            try
+            {
+                genericMethod.Invoke(_eventBusService, new[] { typedEvent, sender });
+                onEventHandled(item);
+            }
+            catch (TargetInvocationException ex)
+            {
+                RetryNeededException retry = ex.InnerException as RetryNeededException;
+                if (retry != null)
+                {
+                    onEventRetried(item, retry);
+                }
+                else
+                {
+                    onEventFailed(item, ex.InnerException);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when event handling failed and retry not needed
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="ex"></param>
+        protected virtual void onEventFailed(IQueueItem item, Exception ex)
         {
             _repository.DeleteItem(item);
         }
 
+        /// <summary>
+        /// Called when we need to retry event
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="ex"></param>
         protected virtual void onEventRetried(IQueueItem item, RetryNeededException ex)
         {
             _repository.UpdateItem(item);
         }
 
+        /// <summary>
+        /// Called when event handled successfully
+        /// </summary>
+        /// <param name="item"></param>
         protected virtual void onEventHandled(IQueueItem item)
         {
             _repository.DeleteItem(item);
@@ -137,14 +187,14 @@ namespace SocialTalents.Hp.Events.Queue
             return result;
         }
         
-        private object BuildGenericQueueEvent(IQueueItem eventInstance)
+        protected object BuildGenericQueueEvent(IQueueItem eventInstance)
         {
             Type genericType = typeof(QueuedEvent<>).MakeGenericType(Type.GetType(eventInstance.DeclaringEventType));
 
             return Activator.CreateInstance(genericType, new object[] { eventInstance, eventInstance.Event });
         }
 
-        private object BuildSender(string declaredEventType)
+        protected object BuildSender(string declaredEventType)
         {
             var result = _sendersByType.GetOrAdd(declaredEventType,
                 (i) =>
@@ -159,11 +209,6 @@ namespace SocialTalents.Hp.Events.Queue
             return result;
         }
         #endregion
-
-        protected virtual ProcessEventsResult onProcessEventsCompleted(ProcessEventsResult stat)
-        {
-            return stat;
-        }
 
         protected virtual ProcessEventsResult onBuildProcessEventsResult()
         {

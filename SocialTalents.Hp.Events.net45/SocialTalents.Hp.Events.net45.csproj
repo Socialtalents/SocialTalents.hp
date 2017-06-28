@@ -51,7 +51,6 @@
     <Compile Include="Queue\Backoff.cs" />
     <Compile Include="Queue\IEventQueueRepository.cs" />
     <Compile Include="Queue\EventQueueService.cs" />
-    <Compile Include="Queue\IEventQueueService.cs" />
     <Compile Include="Queue\InMemoryQueueRepository.cs" />
     <Compile Include="Queue\IUniqueEvent.cs" />
     <Compile Include="Queue\QueuedEvent.cs" />

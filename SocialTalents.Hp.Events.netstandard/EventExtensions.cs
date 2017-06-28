@@ -146,6 +146,12 @@ namespace SocialTalents.Hp.Events
             };
         }
 
+        /// <summary>
+        /// Wraps handler to handle events which has been queued
+        /// </summary>
+        /// <typeparam name="TEvent">Initial event type</typeparam>
+        /// <param name="handler">Handler to use`</param>
+        /// <returns></returns>
         public static Delegate<QueuedEvent<TEvent>> AsQueued<TEvent>(this Delegate<TEvent> handler)
         {
             return (QueuedEvent<TEvent> param) =>
@@ -155,10 +161,10 @@ namespace SocialTalents.Hp.Events
         }
 
         /// <summary>
-        /// Wraps handler for Asynchronous execution
+        /// Wraps handler to handle events which has been queued
         /// </summary>
-        /// <typeparam name="TEvent"></typeparam>
-        /// <param name="handler"></param>
+        /// <typeparam name="TEvent">Handler to use</typeparam>
+        /// <param name="handler">Handler to use</param>
         /// <returns></returns>
         public static Delegate<QueuedEvent<TEvent>> AsQueued<TEvent>(this ICanHandle<TEvent> handler)
         {
@@ -166,11 +172,28 @@ namespace SocialTalents.Hp.Events
             return AsQueued(handlerAsDelegate);
         }
 
+        /// <summary>
+        /// Retry strategy for queued events
+        /// </summary>
+        /// <typeparam name="TEvent"></typeparam>
+        /// <param name="handler"></param>
+        /// <param name="times"></param>
+        /// <param name="backOffStrategy"></param>
+        /// <returns></returns>
         public static Delegate<QueuedEvent<TEvent>> RetryQueued<TEvent>(this Delegate<QueuedEvent<TEvent>> handler, int times, Action<IQueueItem> backOffStrategy)
         {
             return RetryQueued<TEvent, Exception>(handler, times, backOffStrategy);
         }
         
+        /// <summary>
+        /// Retry strategy for qued events with specific exception to catch
+        /// </summary>
+        /// <typeparam name="TEvent"></typeparam>
+        /// <typeparam name="TException"></typeparam>
+        /// <param name="handler"></param>
+        /// <param name="times"></param>
+        /// <param name="backOffStrategy"></param>
+        /// <returns></returns>
         public static Delegate<QueuedEvent<TEvent>> RetryQueued<TEvent, TException>(this Delegate<QueuedEvent<TEvent>> handler, int times, Action<IQueueItem> backOffStrategy) where TException : Exception
         {
             return (arg) =>

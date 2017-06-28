@@ -42,7 +42,7 @@ namespace SocialTalents.Hp.UnitTests.Events
             testService.ProcessingTimeLimit = TimeSpan.FromMilliseconds(249);
             var result = testService.ProcessEvents();
             Console.Write($"Number of items processed: {result.Processed}");
-            Assert.IsTrue(result.Processed == 4);
+            Assert.IsTrue(4 == result.Processed || 5 == result.Processed);
         }
 
         [TestMethod]
