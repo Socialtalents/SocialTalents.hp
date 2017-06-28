@@ -1,5 +1,6 @@
 ﻿using SocialTalents.Hp.Events.Exceptions;
 using SocialTalents.Hp.Events.Internal;
+using SocialTalents.Hp.Events.Queue;
 using System;
 using System.Threading.Tasks;
 
@@ -141,6 +142,53 @@ namespace SocialTalents.Hp.Events
                 if (lastException != null)
                 {
                     throw new RetryFailedException($"Maximum number of attempts ({times}) exceeded", lastException);
+                }
+            };
+        }
+
+        public static Delegate<QueuedEvent<TEvent>> AsQueued<TEvent>(this Delegate<TEvent> handler)
+        {
+            return (QueuedEvent<TEvent> param) =>
+            {
+                handler(param.Event);
+            };
+        }
+
+        /// <summary>
+        /// Wraps handler for Asynchronous execution
+        /// </summary>
+        /// <typeparam name="TEvent"></typeparam>
+        /// <param name="handler"></param>
+        /// <returns></returns>
+        public static Delegate<QueuedEvent<TEvent>> AsQueued<TEvent>(this ICanHandle<TEvent> handler)
+        {
+            Delegate<TEvent> handlerAsDelegate = handler.Handle;
+            return AsQueued(handlerAsDelegate);
+        }
+
+        public static Delegate<QueuedEvent<TEvent>> RetryQueued<TEvent>(this Delegate<QueuedEvent<TEvent>> handler, int times, Action<IQueueItem> backOffStrategy)
+        {
+            return RetryQueued<TEvent, Exception>(handler, times, backOffStrategy);
+        }
+        
+        public static Delegate<QueuedEvent<TEvent>> RetryQueued<TEvent, TException>(this Delegate<QueuedEvent<TEvent>> handler, int times, Action<IQueueItem> backOffStrategy) where TException : Exception
+        {
+            return (arg) =>
+            {
+                try
+                {
+                    handler(arg);
+                }
+                catch (TException ex)
+                {
+                    arg.Item.Attempts++;
+                    if (arg.Item.Attempts <= times)
+                    {
+                        backOffStrategy(arg.Item);
+                        throw new RetryNeededException($"Max Failure number not exceeded ({arg.Item.Attempts} < {times})", ex);
+                    }
+                    // with this throw we are loosing stacktrace but it probably some outer handler is looking for this exception type
+                    throw ex;
                 }
             };
         }
