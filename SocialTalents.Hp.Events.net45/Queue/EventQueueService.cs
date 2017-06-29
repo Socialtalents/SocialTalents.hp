@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SocialTalents.Hp.Events.Queue
 {
@@ -27,7 +28,7 @@ namespace SocialTalents.Hp.Events.Queue
         /// <returns></returns>
         public Delegate<TEvent> Enque<TEvent>()
         {
-            return Enque<TEvent>(TimeSpan.Zero);
+            return (TEvent e) => AddEventHandler(e, typeof(TEvent), TimeSpan.Zero);
         }
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace SocialTalents.Hp.Events.Queue
         /// <returns></returns>
         public virtual Delegate<TEvent> Enque<TEvent>(TimeSpan handleAfter)
         {
-            return (TEvent e) => AddEvent(e, typeof(TEvent), handleAfter);
+            return (TEvent e) => AddEventHandler(e, typeof(TEvent), handleAfter);
         }
         
         /// <summary>
@@ -47,7 +48,7 @@ namespace SocialTalents.Hp.Events.Queue
         /// <param name="eventInstance"></param>
         /// <param name="queueType"></param>
         /// <param name="handleAfter"></param>
-        protected virtual void AddEvent(object eventInstance, Type queueType, TimeSpan handleAfter) 
+        protected virtual void AddEventHandler(object eventInstance, Type queueType, TimeSpan handleAfter) 
         {
             var item = _repository.BuildNewItem(eventInstance);
             item.HandleAfter = DateTime.Now.Add(handleAfter);
@@ -91,18 +92,23 @@ namespace SocialTalents.Hp.Events.Queue
         {
             ProcessEventsResult result = onBuildProcessEventsResult();
 
-            while (DateTime.Now.Subtract(result.Started).CompareTo(ProcessingTimeLimit) < 0)
+            bool exitLoop = false;
+
+            Task.Delay(ProcessingTimeLimit).ContinueWith((a) => exitLoop = true);
+
+            while (!exitLoop)
             {
                 var itemsPortion = _repository.GetItemsToHandle(PortionSize);
-
+                
                 foreach(var item in itemsPortion)
                 {
-                    if (DateTime.Now.Subtract(result.Started).CompareTo(ProcessingTimeLimit) >= 0)
+                    if (exitLoop)
                         break;
                     onProcessQueueItem(item);
                     result.Processed++;
                 }
-                if (itemsPortion.Count() < PortionSize) { break; }
+
+                if (!itemsPortion.Any()) { break; }
             }
             return result;
         }
@@ -166,11 +172,11 @@ namespace SocialTalents.Hp.Events.Queue
         }
 
         #region A bit of refleciton magic to support Publish<TEvent>
-        private ConcurrentDictionary<string, MethodInfo> _raiseMethodByType = new ConcurrentDictionary<string, MethodInfo>();
-        private ConcurrentDictionary<string, ConstructorInfo> _typedEventConstructorByType = new ConcurrentDictionary<string, ConstructorInfo>();
-        private ConcurrentDictionary<string, object> _sendersByType = new ConcurrentDictionary<string, object>();
+        protected ConcurrentDictionary<string, MethodInfo> _raiseMethodByType = new ConcurrentDictionary<string, MethodInfo>();
+        protected ConcurrentDictionary<string, ConstructorInfo> _typedEventConstructorByType = new ConcurrentDictionary<string, ConstructorInfo>();
+        protected ConcurrentDictionary<string, object> _sendersByType = new ConcurrentDictionary<string, object>();
 
-        protected MethodInfo GetPublishMethodInfo(string declaredEventType)
+        protected virtual MethodInfo GetPublishMethodInfo(string declaredEventType)
         {
             var result = _raiseMethodByType.GetOrAdd(declaredEventType,
                 (i) =>
@@ -188,14 +194,14 @@ namespace SocialTalents.Hp.Events.Queue
             return result;
         }
         
-        protected object BuildGenericQueueEvent(IQueueItem eventInstance)
+        protected virtual object BuildGenericQueueEvent(IQueueItem eventInstance)
         {
             Type genericType = typeof(QueuedEvent<>).MakeGenericType(Type.GetType(eventInstance.DeclaringEventType));
 
             return Activator.CreateInstance(genericType, new object[] { eventInstance, eventInstance.Event });
         }
 
-        protected object BuildSender(string declaredEventType)
+        protected virtual object BuildSender(string declaredEventType)
         {
             var result = _sendersByType.GetOrAdd(declaredEventType,
                 (i) =>

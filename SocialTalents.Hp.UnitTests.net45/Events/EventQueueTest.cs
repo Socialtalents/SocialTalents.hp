@@ -4,6 +4,7 @@ using SocialTalents.Hp.Events.Queue;
 using SocialTalents.Hp.UnitTests.Events.Internal;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -141,6 +142,47 @@ namespace SocialTalents.Hp.UnitTests.Events
                 Assert.IsTrue(item.HandleAfter.Subtract(initialDateTime).TotalSeconds > 1);
                 Assert.IsTrue(item.HandleAfter.Subtract(initialDateTime).TotalSeconds < (2^5));
             }
+        }
+
+        [TestMethod]
+        public void Queue_Performance_AtLeast10kTps()
+        {
+            bus.Subscribe(testService.Enque<TestEvent>());
+
+            int counter = 0;
+            Delegate<TestEvent> handler = (eventInstance) => counter++;
+            bus.Subscribe(handler.AsQueued());
+
+            bus.Publish(new TestEvent(), this);
+
+            // warmup
+            TestEvent e = new TestEvent();
+            bus.Publish(e, this);
+            testService.ProcessEvents();
+            testService.PortionSize = 1000;
+
+            Stopwatch w = new Stopwatch();
+            w.Start();
+            while (w.ElapsedMilliseconds < 200)
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    bus.Publish(e, this);
+                    bus.Publish(e, this);
+                    bus.Publish(e, this);
+                    bus.Publish(e, this);
+                    bus.Publish(e, this);
+                    bus.Publish(e, this);
+                    bus.Publish(e, this);
+                    bus.Publish(e, this);
+                }
+                testService.ProcessEvents();
+            }
+            w.Stop();
+            // counter / elapsed = ops/ms, * 1000 - counter / s
+            long operationsPerSecond = counter * 1000 / w.ElapsedMilliseconds;
+            Console.WriteLine(string.Format("{0} op/sec, {1} total", operationsPerSecond, counter));
+            Assert.IsTrue(operationsPerSecond > 10000);
         }
     }
 }
