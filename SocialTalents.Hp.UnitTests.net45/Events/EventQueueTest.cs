@@ -112,9 +112,9 @@ namespace SocialTalents.Hp.UnitTests.Events
             bus.Subscribe(testService.Enque<TestEvent>());
 
             StringBuilder log = new StringBuilder();
-            int registeredFailures = 0;
-            // Subscribe handler which waits 50 ms
+            
             Delegate<TestEvent> handler = (e) => { log.Append("MainHandler|"); throw new NotImplementedException(); };
+
             bus.Subscribe(
                 handler
                 .AsQueued().RetryQueued(3, Backoff.None())
