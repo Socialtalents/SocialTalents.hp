@@ -121,6 +121,7 @@ namespace SocialTalents.Hp.Events.Queue
                 genericMethod.Invoke(_eventBusService, new[] { typedEvent, sender });
                 onEventHandled(item);
             }
+            // Exceptions from actual delegate are wrapped into TargetInvocationException by MethodBase.Invoke()
             catch (TargetInvocationException ex)
             {
                 RetryNeededException retry = ex.InnerException as RetryNeededException;

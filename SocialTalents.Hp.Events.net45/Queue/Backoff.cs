@@ -48,8 +48,8 @@ namespace SocialTalents.Hp.Events.Queue
             {
                 // https://en.wikipedia.org/wiki/Exponential_backoff
                 int maxC = Math.Min(queueItem.Attempts, maximum);
-                int rndMax = 1 << maxC;
-                queueItem.HandleAfter = DateTime.Now.Add(new TimeSpan(intervall.Ticks * ExponentialBackoffRandomGenerator.Next(rndMax)));
+                int rndMax = Math.Max(0, 1 << maxC - 1);
+                queueItem.HandleAfter = DateTime.Now.Add(new TimeSpan(intervall.Ticks * (1 + ExponentialBackoffRandomGenerator.Next(rndMax))));
             };
         }
     }
