@@ -53,9 +53,12 @@
     <Compile Include="Events\EventsTest.cs" />
     <Compile Include="Events\Internal\ChildEvent.cs" />
     <Compile Include="Events\Internal\TestEvent.cs" />
+    <Compile Include="Events\Internal\UniqueEvent.cs" />
     <Compile Include="Events\OnFailTests.cs" />
+    <Compile Include="Events\EventQueueTest.cs" />
     <Compile Include="Events\RetryTests.cs" />
     <Compile Include="Events\SingletonTest.cs" />
+    <Compile Include="Events\InMemoryQueueRepositoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

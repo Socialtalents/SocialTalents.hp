@@ -24,7 +24,7 @@ namespace SocialTalents.Hp.Events
         {
             DoNothing = (Exception e) => { };
             ThrowException = (Exception e) => throw e;
-            PublishExceptionToDefaultEventBus = (Exception e) => EventBus.Publish<Exception>(e, new SenderStub<Exception>());
+            PublishExceptionToDefaultEventBus = (Exception e) => EventBus.Publish<Exception>(e, new SenderProxy<Exception>(SenderUnknown.Instance));
         }
     }
 }

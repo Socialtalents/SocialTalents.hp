@@ -15,10 +15,9 @@ namespace SocialTalents.Hp.UnitTests.Events
             bool asyncSubscription = false;
             Exception ex = null;
             EventBus.Subscribe<Exception>((e) => ex = e);
-            EventBus.Subscribe<TestEvent>(
-                EventExtensions.Async((TestEvent args) => { Thread.Sleep(1); asyncSubscription = true; })
-            );
-            EventBus.Publish<TestEvent>(new TestEvent(), this);
+            Delegate<TestEvent> handler = (TestEvent args) => { Thread.Sleep(1); asyncSubscription = true; };
+            EventBus.Subscribe(handler.Async());
+            EventBus.Publish(new TestEvent(), this);
             Assert.IsFalse(asyncSubscription);
             waitFor(() => asyncSubscription);
             Assert.IsNull(ex);
@@ -30,8 +29,9 @@ namespace SocialTalents.Hp.UnitTests.Events
             bool asyncSubscription = false;
             Exception ex = null;
             EventBus.Subscribe<Exception>((e) => ex = e);
-            EventBus.Subscribe<TestEvent>(
-                EventExtensions.Async((TestEvent args) => { throw new InvalidOperationException(); })
+            Delegate<TestEvent> handler = (TestEvent args) => { throw new InvalidOperationException(); };
+            EventBus.Subscribe(
+                handler.Async()
             );
             EventBus.Publish<TestEvent>(new TestEvent(), this);
             Assert.IsFalse(asyncSubscription);

@@ -1,5 +1,6 @@
 ﻿using SocialTalents.Hp.Events.Exceptions;
 using SocialTalents.Hp.Events.Internal;
+using SocialTalents.Hp.Events.Queue;
 using System;
 using System.Threading.Tasks;
 
@@ -141,6 +142,76 @@ namespace SocialTalents.Hp.Events
                 if (lastException != null)
                 {
                     throw new RetryFailedException($"Maximum number of attempts ({times}) exceeded", lastException);
+                }
+            };
+        }
+
+        /// <summary>
+        /// Wraps handler to handle events which has been queued
+        /// </summary>
+        /// <typeparam name="TEvent">Initial event type</typeparam>
+        /// <param name="handler">Handler to use`</param>
+        /// <returns></returns>
+        public static Delegate<QueuedEvent<TEvent>> AsQueued<TEvent>(this Delegate<TEvent> handler)
+        {
+            return (QueuedEvent<TEvent> param) =>
+            {
+                handler(param.Event);
+            };
+        }
+
+        /// <summary>
+        /// Wraps handler to handle events which has been queued
+        /// </summary>
+        /// <typeparam name="TEvent">Handler to use</typeparam>
+        /// <param name="handler">Handler to use</param>
+        /// <returns></returns>
+        public static Delegate<QueuedEvent<TEvent>> AsQueued<TEvent>(this ICanHandle<TEvent> handler)
+        {
+            Delegate<TEvent> handlerAsDelegate = handler.Handle;
+            return AsQueued(handlerAsDelegate);
+        }
+
+        /// <summary>
+        /// Retry strategy for queued events
+        /// </summary>
+        /// <typeparam name="TEvent"></typeparam>
+        /// <param name="handler"></param>
+        /// <param name="times"></param>
+        /// <param name="backOffStrategy"></param>
+        /// <returns></returns>
+        public static Delegate<QueuedEvent<TEvent>> RetryQueued<TEvent>(this Delegate<QueuedEvent<TEvent>> handler, int times, Action<IQueueItem> backOffStrategy)
+        {
+            return RetryQueued<TEvent, Exception>(handler, times, backOffStrategy);
+        }
+        
+        /// <summary>
+        /// Retry strategy for qued events with specific exception to catch
+        /// </summary>
+        /// <typeparam name="TEvent"></typeparam>
+        /// <typeparam name="TException"></typeparam>
+        /// <param name="handler"></param>
+        /// <param name="times"></param>
+        /// <param name="backOffStrategy"></param>
+        /// <returns></returns>
+        public static Delegate<QueuedEvent<TEvent>> RetryQueued<TEvent, TException>(this Delegate<QueuedEvent<TEvent>> handler, int times, Action<IQueueItem> backOffStrategy) where TException : Exception
+        {
+            return (arg) =>
+            {
+                try
+                {
+                    handler(arg);
+                }
+                catch (TException ex)
+                {
+                    arg.Item.Attempts++;
+                    if (arg.Item.Attempts <= times)
+                    {
+                        backOffStrategy(arg.Item);
+                        throw new RetryNeededException($"Max Failure number not exceeded ({arg.Item.Attempts} < {times})", ex);
+                    }
+                    // with this throw we are loosing stacktrace but it probably some outer handler is looking for this exception type
+                    throw ex;
                 }
             };
         }
