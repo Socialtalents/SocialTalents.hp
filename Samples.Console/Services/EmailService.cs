@@ -20,19 +20,19 @@ namespace Samples.Console.Services
 
             int delay = 1000 + _rnd.Next(4000);
             
-            Output.Log($"Trying to send email to {param.User.Email}, Delay = {delay} ms, Chance to succeed: {SuccessRate}%");
+            Output.Log($"Trying to send email to {param.User.Email}, Delay = {delay} ms, Chance to succeed: {SuccessRate}%", "EmailService");
 
             Thread.Sleep(delay);
 
             // Simluating failure
             if (_rnd.Next(100) > SuccessRate)
             {
-                Output.Error("Simulating some error in SMTP");
+                Output.Error("Simulating some error in SMTP", "EmailService");
                 throw new InvalidOperationException("Smpt sending failed");
             }
             else
             {
-                Output.Log($"Email to {param.User.Email} sent!");
+                Output.Success($"Email to {param.User.Email} sent!", "EmailService");
             }
         }
 

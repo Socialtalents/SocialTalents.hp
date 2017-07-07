@@ -11,5 +11,10 @@ namespace Samples.Console.Event
     {
         public UserRegistered(User user) { User = user; }
         public User User { get; set; }
+
+        public override string ToString()
+        {
+            return $"User registered: {User.Email}";
+        }
     }
 }
