@@ -7,6 +7,7 @@ using System.Text;
 namespace SocialTalents.Hp.Events
 {
     public delegate void Delegate<TArg>(TArg param);
+    public delegate void FailDelegate<TArg>(TArg param, Exception ex);
     public delegate DateTime ExecutionTimeCalculator();
 
     /// <summary>

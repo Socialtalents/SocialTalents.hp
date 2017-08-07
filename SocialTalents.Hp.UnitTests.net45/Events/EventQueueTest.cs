@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SocialTalents.Hp.Events;
+using SocialTalents.Hp.Events.Exceptions;
 using SocialTalents.Hp.Events.Queue;
 using SocialTalents.Hp.UnitTests.Events.Internal;
 using System;
@@ -119,7 +120,7 @@ namespace SocialTalents.Hp.UnitTests.Events
             bus.Subscribe(
                 handler
                 .AsQueued().RetryQueued(3, Backoff.None())
-                .AddOnFail<QueuedEvent<TestEvent>, NotImplementedException>((failedEvent) => log.Append("FailureHandler|"))
+                .WhenRetryQueueFailed((failedEvent, ex) => log.Append("FailureHandler|"))
                 );
 
             bus.Publish(new TestEvent(), this);

@@ -20,7 +20,7 @@ namespace SocialTalents.Hp.UnitTests.Events
             bool secondCall = false;
 
             Delegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
-            Delegate<TestEvent> secondHandler = (p) => { secondCall = true; };
+            FailDelegate<TestEvent> secondHandler = (p, e) => { secondCall = true; };
 
             EventBus.Subscribe<TestEvent>(
                 firstHandler.AddOnFail<TestEvent, ArgumentException>(secondHandler)
@@ -37,7 +37,7 @@ namespace SocialTalents.Hp.UnitTests.Events
             bool secondCall = false;
             bool exceptionPublished = false;
             Delegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
-            Delegate<TestEvent> secondHandler = (p) => { secondCall = true; };
+            FailDelegate<TestEvent> secondHandler = (p, e) => { secondCall = true; };
 
             EventBus.Subscribe<TestEvent>(firstHandler.AddOnFail<TestEvent, Exception>(secondHandler, OnException.PublishExceptionToDefaultEventBus));
 
@@ -57,7 +57,7 @@ namespace SocialTalents.Hp.UnitTests.Events
             bool exceptionPublished = false;
 
             Delegate<TestEvent> firstHandler = (p) => { throw new InvalidOperationException(); };
-            Delegate<TestEvent> secondHandler = (p) => { secondCall = true; };
+            FailDelegate<TestEvent> secondHandler = (p, e) => { secondCall = true; };
 
             EventBus.Subscribe<TestEvent>(
                 firstHandler.AddOnFail<TestEvent, Exception>(secondHandler)
@@ -78,7 +78,7 @@ namespace SocialTalents.Hp.UnitTests.Events
             int secondCall = 0;
 
             Delegate<TestEvent> firstHandler = (p) => { firstCall++;  if (firstCall < 3) { throw new InvalidOperationException(); } };
-            Delegate<TestEvent> secondHandler = (p) => { secondCall++; };
+            FailDelegate<TestEvent> secondHandler = (p, e) => { secondCall++; };
 
             EventBus.Subscribe<TestEvent>(
                 firstHandler
@@ -102,7 +102,7 @@ namespace SocialTalents.Hp.UnitTests.Events
             int secondCall = 0;
 
             Delegate<TestEvent> firstHandler = (p) => { firstCall++; throw new InvalidOperationException(); };
-            Delegate<TestEvent> secondHandler = (p) => { secondCall++; };
+            FailDelegate<TestEvent> secondHandler = (p, e) => { secondCall++; };
 
             EventBus.Subscribe<TestEvent>(
                 firstHandler

@@ -46,7 +46,7 @@ namespace SocialTalents.Hp.Events
         /// </summary>
         public static Delegate<TEvent> AddOnFail<TEvent, TException>(this ICanHandle<TEvent> handler, ICanHandle<TEvent> onFailHandler, OnException.DelegateInterface onException = null) where TException : Exception
         {
-            return AddOnFail<TEvent, TException>(handler.Handle, onFailHandler.Handle, onException);
+            return AddOnFail<TEvent, TException>(handler.Handle, (a, e) => onFailHandler.Handle(a), onException);
         }
 
         /// <summary>
@@ -54,13 +54,13 @@ namespace SocialTalents.Hp.Events
         /// </summary>
         public static Delegate<TEvent> AddOnFail<TEvent, TException>(this Delegate<TEvent> handler, ICanHandle<TEvent> onFailHandler, OnException.DelegateInterface onException = null) where TException : Exception
         {
-            return AddOnFail<TEvent, TException>(handler, onFailHandler.Handle, onException);
+            return AddOnFail<TEvent, TException>(handler, (a, e) => onFailHandler.Handle(a), onException);
         }
 
         /// <summary>
         /// Subscribe to event with special behavior when handler failed. If it fails with TException - onFail is called
         /// </summary>
-        public static Delegate<TEvent> AddOnFail<TEvent, TException>(this ICanHandle<TEvent> handler, Delegate<TEvent> onFailHandler, OnException.DelegateInterface onException = null) where TException : Exception
+        public static Delegate<TEvent> AddOnFail<TEvent, TException>(this ICanHandle<TEvent> handler, FailDelegate<TEvent> onFailHandler, OnException.DelegateInterface onException = null) where TException : Exception
         {
             return AddOnFail<TEvent, TException>(handler.Handle, onFailHandler, onException);
         }
@@ -68,7 +68,7 @@ namespace SocialTalents.Hp.Events
         /// <summary>
         /// Subscribe to event with special behavior when handler failed. If it fails with TException - onFail is called
         /// </summary>
-        public static Delegate<TEvent> AddOnFail<TEvent, TException>(this Delegate<TEvent> handler, Delegate<TEvent> onFailHandler, OnException.DelegateInterface onException = null) where TException : Exception
+        public static Delegate<TEvent> AddOnFail<TEvent, TException>(this Delegate<TEvent> handler, FailDelegate<TEvent> onFailHandler, OnException.DelegateInterface onException = null) where TException : Exception
         {
             return (param) =>
             {
@@ -78,7 +78,7 @@ namespace SocialTalents.Hp.Events
                 }
                 catch (TException ex)
                 {
-                    onFailHandler(param);
+                    onFailHandler(param, ex);
                     onException?.Invoke(ex);
                 }
             };
@@ -210,7 +210,46 @@ namespace SocialTalents.Hp.Events
                         backOffStrategy(arg.Item);
                         throw new RetryNeededException($"Max Failure number not exceeded ({arg.Item.Attempts} < {times})", ex);
                     }
-                    // with this throw we are loosing stacktrace but it probably some outer handler is looking for this exception type
+                    throw new RetryFailedException($"Maximum number of attempts ({times}) exceeded", ex);
+                }
+            };
+        }
+
+        public static Delegate<QueuedEvent<TEvent>> WhenRetryQueueFailed<TEvent>(this ICanHandle<QueuedEvent<TEvent>> handler, ICanHandle<QueuedEvent<TEvent>> onFailHandler)
+        {
+            return WhenRetryQueueFailed<TEvent>(handler.Handle, (a, e) => onFailHandler.Handle(a));
+        }
+
+        /// <summary>
+        /// Subscribe to event with special behavior when handler failed. If it fails with TException - onFail is called
+        /// </summary>
+        public static Delegate<QueuedEvent<TEvent>> WhenRetryQueueFailed<TEvent>(this Delegate<QueuedEvent<TEvent>> handler, ICanHandle<QueuedEvent<TEvent>> onFailHandler) 
+        {
+            return WhenRetryQueueFailed<TEvent>(handler, (a, e) => onFailHandler.Handle(a));
+        }
+
+        /// <summary>
+        /// Subscribe to event with special behavior when handler failed. If it fails with TException - onFail is called
+        /// </summary>
+        public static Delegate<QueuedEvent<TEvent>> WhenRetryQueueFailed<TEvent>(this ICanHandle<QueuedEvent<TEvent>> handler, 
+            FailDelegate<QueuedEvent<TEvent>> onFailHandler)
+        {
+            return WhenRetryQueueFailed<TEvent>(handler.Handle, onFailHandler);
+        }
+
+        public static Delegate<QueuedEvent<TEvent>> WhenRetryQueueFailed<TEvent>(this Delegate<QueuedEvent<TEvent>> handler,
+            FailDelegate<QueuedEvent<TEvent>> onFailHandler)
+        {
+            return (arg) =>
+            {
+                try
+                {
+                    handler(arg);
+                }
+                catch (RetryFailedException ex)
+                {
+                    onFailHandler(arg, ex);
+                    // re-throwing, so event can be marked as deleted
                     throw ex;
                 }
             };
