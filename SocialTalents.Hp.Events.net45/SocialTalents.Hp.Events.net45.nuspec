@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>SocialTalents.Hp.Events</id>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
     <title>SocialTalents.Hp.Events for .net 4.5.1+</title>
     <authors>SocialTalents Software Inc</authors>
     <owners>SocialTalents Software Inc</owners>
@@ -15,7 +15,7 @@
       Refer to https://github.com/Socialtalents/SocialTalents.hp for sources and samples
     </description>
     <releaseNotes>
-      Queued Event handling added
+      OnFail patters changed (a bit breaking)
       Refer to https://github.com/Socialtalents/SocialTalents.hp for sources and samples</releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>Events Subscribe Publish</tags>
