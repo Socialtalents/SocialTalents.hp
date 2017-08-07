@@ -29,7 +29,7 @@ namespace Samples.Console.Utils
 
         protected override void onEventRetried(IQueueItem item, RetryNeededException ex)
         {
-            Output.Log($"Handling failed for {item.Event.ToString()}, retrrying after {item.HandleAfter}", "Queue");
+            Output.Log($"Handling failed for {item.Event.ToString()}, retrying after {item.HandleAfter}", "Queue");
             base.onEventRetried(item, ex);
         }
     }

@@ -93,7 +93,7 @@ namespace Samples.Console
             emailService.SuccessRate = 40;
             EventBus.Subscribe(
                 emailService.AddOnFail<UserRegistered, Exception>(
-                    (userRegistered) => Output.Error("OnFail handler triggered to notify user " + userRegistered.User.Email, "OnFailHandler")
+                    (userRegistered, ex) => Output.Error("OnFail handler triggered to notify user " + userRegistered.User.Email, "OnFailHandler")
                 )
                 // also, let's make it async
                 .Async()
@@ -126,6 +126,7 @@ namespace Samples.Console
                  emailService.AsQueued()
                  // Once received, retry event 6 times with exponential delays
                  .RetryQueued(6, Backoff.ExponentialBackoff(TimeSpan.FromSeconds(10)))
+                 .WhenRetryQueueFailed((item, e) => Output.Error("Queued handler failed answer 6 attempts"))
             );
 
             // In this sample we are using timer to invoke queue
