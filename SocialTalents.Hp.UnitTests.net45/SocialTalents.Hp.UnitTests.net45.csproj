@@ -45,8 +45,20 @@
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.1.11\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="MongoDB.Bson, Version=2.4.0.70, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Bson.2.4.0\lib\net45\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver, Version=2.4.0.70, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.2.4.0\lib\net45\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver.Core, Version=2.4.0.70, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.Core.2.4.0\lib\net45\MongoDB.Driver.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Events\AsyncTests.cs" />
@@ -59,6 +71,9 @@
     <Compile Include="Events\RetryTests.cs" />
     <Compile Include="Events\SingletonTest.cs" />
     <Compile Include="Events\InMemoryQueueRepositoryTest.cs" />
+    <Compile Include="MongoDB\InMemoryRepositoryTest.cs" />
+    <Compile Include="MongoDB\RepositoryTest.cs" />
+    <Compile Include="MongoDB\TestDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -69,9 +84,9 @@
       <Project>{60657264-183f-4cc9-afa4-d925a7b76197}</Project>
       <Name>SocialTalents.Hp.Events.net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SocialTalents.Hp.MongoDb\SocialTalents.Hp.MongoDb.csproj">
-      <Project>{22958f8b-d839-4550-8d8b-9bc5190a610d}</Project>
-      <Name>SocialTalents.Hp.MongoDb</Name>
+    <ProjectReference Include="..\SocialTalents.Hp.MongoDb.net45\SocialTalents.Hp.MongoDB.net45.csproj">
+      <Project>{d5224f8c-5ccd-45c0-b3cb-267460040070}</Project>
+      <Name>SocialTalents.Hp.MongoDB.net45</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.5</TargetFramework>
+    <RootNamespace>SocialTalents.Hp.MongoDB</RootNamespace>
+    <AssemblyName>SocialTalents.Hp.MongoDB.netstandard</AssemblyName>
+    <PreBuildEvent>del /s C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.netstandard\*.cs
+xcopy C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.net45\*.cs C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.netstandard /e /y
+del C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.netstandard\Properties\AssemblyInfo.cs</PreBuildEvent>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard1.1\SocialTalents.Hp.MongoDb.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SocialTalents.Hp.Events.netstandard\SocialTalents.Hp.Events.netstandard.csproj" />
+  </ItemGroup>
+
+</Project>
