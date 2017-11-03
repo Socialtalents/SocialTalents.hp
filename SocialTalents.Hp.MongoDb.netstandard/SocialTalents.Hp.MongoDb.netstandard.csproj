@@ -7,6 +7,7 @@
     <PreBuildEvent>del /s C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.netstandard\*.cs
 xcopy C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.net45\*.cs C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.netstandard /e /y
 del C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.netstandard\Properties\AssemblyInfo.cs</PreBuildEvent>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
