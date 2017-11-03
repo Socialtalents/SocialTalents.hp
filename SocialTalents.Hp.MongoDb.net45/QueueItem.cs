@@ -47,11 +47,7 @@ namespace SocialTalents.Hp.MongoDB
                 // TopNamespace.SubNameSpace.ContainingClass+NestedClass, MyAssembly, Version=1.3.0.0, Culture=neutral, PublicKeyToken=b17a5c561934e089 
                 // ->
                 // TopNamespace.SubNameSpace.ContainingClass+NestedClass, MyAssembly
-                DataType = string.Join(",",
-                    objectType
-                        .AssemblyQualifiedName
-                        .Split(',')
-                        .Take(2).ToArray());
+                DataType = objectType.AssemblyQualifiedName;
                 DataJson = value.ToJson();
                 _value = value;
             }

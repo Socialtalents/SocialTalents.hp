@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SocialTalents.Hp.UnitTests.Events
 {
     [TestClass]
-    public class EventQueueTest : ICanPublish<TestEvent>, ICanPublish<UniqueEvent>
+    public class EventQueueTest : ICanPublish<TestEvent>, ICanPublish<UniqueEvent>, ICanPublish<GenericEvent<string>>
     {
         [TestInitialize]
         public void EventQueueTestInit()
@@ -56,6 +56,24 @@ namespace SocialTalents.Hp.UnitTests.Events
             bus.Subscribe<QueuedEvent<TestEvent>>((e) => Task.Delay(50).Wait());
 
             for (int i = 0; i < 10; i++) { bus.Publish(new TestEvent(), this); }
+
+            // expect to handle no more than 5 events
+            testService.ProcessingTimeLimit = TimeSpan.FromMilliseconds(249);
+            var result = testService.ProcessEvents();
+            Console.Write($"Number of items processed: {result.Processed}");
+            Assert.IsTrue(4 == result.Processed || 5 == result.Processed);
+        }
+
+        [TestMethod]
+        public void Queue_Generic()
+        {
+            // Enqueue events for further handling
+            bus.Subscribe(testService.Enque<GenericEvent<string>>());
+
+            // Subscribe handler which waits 50 ms
+            bus.Subscribe<QueuedEvent<GenericEvent<string>>>((e) => Task.Delay(50).Wait());
+
+            for (int i = 0; i < 10; i++) { bus.Publish(new GenericEvent<string>(), this); }
 
             // expect to handle no more than 5 events
             testService.ProcessingTimeLimit = TimeSpan.FromMilliseconds(249);

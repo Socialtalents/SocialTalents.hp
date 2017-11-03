@@ -64,6 +64,7 @@
     <Compile Include="Events\AsyncTests.cs" />
     <Compile Include="Events\EventsTest.cs" />
     <Compile Include="Events\Internal\ChildEvent.cs" />
+    <Compile Include="Events\Internal\GenericEvenr.cs" />
     <Compile Include="Events\Internal\TestEvent.cs" />
     <Compile Include="Events\Internal\UniqueEvent.cs" />
     <Compile Include="Events\OnFailTests.cs" />

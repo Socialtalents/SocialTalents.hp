@@ -2,3 +2,4 @@ packages/
 */obj/
 */bin/
 *.nupkg
+/.vs/SocialTalents.Hp/v15/Server/sqlite3

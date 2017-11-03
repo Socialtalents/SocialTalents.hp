@@ -53,9 +53,7 @@ namespace SocialTalents.Hp.Events.Queue
             var item = _repository.BuildNewItem(eventInstance);
             item.HandleAfter = DateTime.Now.Add(handleAfter);
             // storing only type name and assembly name, otherwise it will be impossible to deserialise object with newer assembly
-            item.DeclaringEventType =
-                string.Join(",",
-                    queueType.AssemblyQualifiedName.Split(',').Take(2)).Trim();
+            item.DeclaringEventType = queueType.AssemblyQualifiedName;
 
             onAddEvent(item, eventInstance);
 
@@ -102,6 +100,7 @@ namespace SocialTalents.Hp.Events.Queue
                 
                 foreach(var item in itemsPortion)
                 {
+                    // exitLoop value changed by parallel tread, might make sense to disable it for debug
                     if (exitLoop)
                         break;
                     onProcessQueueItem(item);
