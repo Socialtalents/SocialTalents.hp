@@ -8,6 +8,13 @@
 xcopy C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.net45\*.cs C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.netstandard /e /y
 del C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.netstandard\Properties\AssemblyInfo.cs</PreBuildEvent>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.1</Version>
+    <PackageReleaseNotes>First nuget release
+See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</PackageReleaseNotes>
+    <PackageIconUrl>http://www.socialtalents.com/favicon-96x96.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Socialtalents/SocialTalents.hp</RepositoryUrl>
+    <Copyright>2014-2017</Copyright>
+    <Description>Helper classes for DAL based on MongoDB</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
