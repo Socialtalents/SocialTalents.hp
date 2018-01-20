@@ -4,9 +4,9 @@
     <TargetFramework>netstandard1.5</TargetFramework>
     <RootNamespace>SocialTalents.Hp.MongoDB</RootNamespace>
     <AssemblyName>SocialTalents.Hp.MongoDB.netstandard</AssemblyName>
-    <PreBuildEvent>del /s C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.netstandard\*.cs
-xcopy C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.net45\*.cs C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.netstandard /e /y
-del C:\_Projects\hp.public\\SocialTalents.Hp.MongoDB.netstandard\Properties\AssemblyInfo.cs</PreBuildEvent>
+    <PreBuildEvent>del /s $(SolutionDir)\SocialTalents.Hp.MongoDB.netstandard\*.cs
+xcopy $(SolutionDir)\SocialTalents.Hp.MongoDB.net45\*.cs $(SolutionDir)\SocialTalents.Hp.MongoDB.netstandard /e /y
+del $(SolutionDir)\SocialTalents.Hp.MongoDB.netstandard\Properties\AssemblyInfo.cs</PreBuildEvent>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.1</Version>
     <PackageReleaseNotes>First nuget release

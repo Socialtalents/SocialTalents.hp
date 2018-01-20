@@ -3,3 +3,6 @@ packages/
 */bin/
 *.nupkg
 /.vs/SocialTalents.Hp/v15/Server/sqlite3
+*.suo
+*.user
+*.ncrunchsolution
