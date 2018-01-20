@@ -6,3 +6,4 @@ packages/
 *.suo
 *.user
 *.cache
+/nuget.exe
