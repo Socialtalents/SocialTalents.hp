@@ -56,9 +56,9 @@ namespace SocialTalents.Hp.MongoDB
 
         public void DeleteMany(Expression<Func<T, bool>> query)
         {
-            OnBeforeDeleteMany(query);
+            RaiseOnBeforeDeleteMany(query);
             _entities.RemoveAll(query.Compile().Invoke);
-            OnDeleteMany(query);
+            RaiseOnDeleteMany(query);
 
             var data = _entities.Where(query.Compile()).ToArray();
             foreach (var e in data)

@@ -50,6 +50,18 @@ namespace SocialTalents.Hp.UnitTests.MongoDB
         }
 
         [TestMethod]
+        public void Repository_DeleteMany()
+        {
+            MyDocument newDoc = new MyDocument() { MyProperty = "Test!" };
+            _repository.Insert(newDoc);
+
+            AssertState(newDoc, _repository.First(a => a.Id == newDoc.Id));
+
+            _repository.DeleteMany(d => d.Id == newDoc.Id);
+            AssertState(null, _repository.FirstOrDefault(a => a.Id == newDoc.Id));
+        }
+
+        [TestMethod]
         public void Repository_Supports_Inheritance()
         {
             MyDocument newDoc1 = new MyDocument() { MyProperty = "Test!" };
