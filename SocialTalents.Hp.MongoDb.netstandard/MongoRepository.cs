@@ -51,9 +51,9 @@ namespace SocialTalents.Hp.MongoDB
 
         public virtual void DeleteMany(Expression<Func<T, bool>> query)
         {
-            OnBeforeDeleteMany(query);
+            RaiseOnBeforeDeleteMany(query);
             Collection.DeleteMany(query);
-            OnDeleteMany(query);
+            RaiseOnDeleteMany(query);
         }
 
         public IQueryable<T> AsQueryable()
