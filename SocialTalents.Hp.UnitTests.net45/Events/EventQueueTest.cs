@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SocialTalents.Hp.Events;
-using SocialTalents.Hp.Events.Exceptions;
 using SocialTalents.Hp.Events.Queue;
 using SocialTalents.Hp.UnitTests.Events.Internal;
 using System;
@@ -63,7 +62,7 @@ namespace SocialTalents.Hp.UnitTests.Events
             Console.Write($"Number of items processed: {result.Processed}");
             Assert.IsTrue(4 == result.Processed || 5 == result.Processed);
         }
-
+        
         [TestMethod]
         public void Queue_Generic()
         {
@@ -89,7 +88,7 @@ namespace SocialTalents.Hp.UnitTests.Events
 
             bus.Subscribe(testService.Enque<UniqueEvent>());
             Delegate<UniqueEvent> handler = (e) => counter++;
-            bus.Subscribe(handler.AsQueued());
+            bus.Subscribe(handler.WhenQueued());
 
             for (int i = 0; i < 10; i++) { bus.Publish(new UniqueEvent() { UniqueKey = (i % 2).ToString() }, this); }
 
@@ -111,7 +110,7 @@ namespace SocialTalents.Hp.UnitTests.Events
             int backofIntervalMs = 50;
             // Subscribe handler which waits 50 ms
             Delegate<TestEvent> handler = (e) => { counter++; throw new NotImplementedException(); };
-            bus.Subscribe(handler.AsQueued().RetryQueued(3,
+            bus.Subscribe(handler.WhenQueued().RetryQueued(3,
                 Backoff.Fixed(TimeSpan.FromMilliseconds(backofIntervalMs))
                 ));
 
@@ -137,7 +136,7 @@ namespace SocialTalents.Hp.UnitTests.Events
 
             bus.Subscribe(
                 handler
-                .AsQueued().RetryQueued(3, Backoff.None())
+                .WhenQueued().RetryQueued(3, Backoff.None())
                 .WhenRetryQueueFailed((failedEvent, ex) => log.Append("FailureHandler|"))
                 );
 
@@ -170,7 +169,7 @@ namespace SocialTalents.Hp.UnitTests.Events
 
             int counter = 0;
             Delegate<TestEvent> handler = (eventInstance) => counter++;
-            bus.Subscribe(handler.AsQueued());
+            bus.Subscribe(handler.WhenQueued());
 
             bus.Publish(new TestEvent(), this);
 
