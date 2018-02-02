@@ -152,7 +152,7 @@ namespace SocialTalents.Hp.Events
         /// <typeparam name="TEvent">Initial event type</typeparam>
         /// <param name="handler">Handler to use`</param>
         /// <returns></returns>
-        public static Delegate<QueuedEvent<TEvent>> AsQueued<TEvent>(this Delegate<TEvent> handler)
+        public static Delegate<QueuedEvent<TEvent>> WhenQueued<TEvent>(this Delegate<TEvent> handler)
         {
             return (QueuedEvent<TEvent> param) =>
             {
@@ -166,10 +166,10 @@ namespace SocialTalents.Hp.Events
         /// <typeparam name="TEvent">Handler to use</typeparam>
         /// <param name="handler">Handler to use</param>
         /// <returns></returns>
-        public static Delegate<QueuedEvent<TEvent>> AsQueued<TEvent>(this ICanHandle<TEvent> handler)
+        public static Delegate<QueuedEvent<TEvent>> WhenQueued<TEvent>(this ICanHandle<TEvent> handler)
         {
             Delegate<TEvent> handlerAsDelegate = handler.Handle;
-            return AsQueued(handlerAsDelegate);
+            return WhenQueued(handlerAsDelegate);
         }
 
         /// <summary>

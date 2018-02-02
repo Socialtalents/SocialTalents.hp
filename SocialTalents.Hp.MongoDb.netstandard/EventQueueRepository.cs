@@ -3,6 +3,7 @@ using SocialTalents.Hp.Events.Queue;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,9 +34,11 @@ namespace SocialTalents.Hp.MongoDB
             base.Delete(item as QueueItem);
         }
 
+        public Expression<Func<QueueItem, bool>> FilterExpression { get; set; } = e => e.HandleAfter < DateTime.Now.ToUniversalTime();
+
         public IEnumerable<IQueueItem> GetItemsToHandle(int limit = 10)
         {
-            return this.Where(e => e.HandleAfter < DateTime.Now.ToUniversalTime()) .OrderBy(e => e.HandleAfter).ThenBy(e => e.Id).Take(limit);
+            return this.Where(FilterExpression).OrderBy(e => e.HandleAfter).ThenBy(e => e.Id).Take(limit);
         }
 
         public void UpdateItem(IQueueItem item)

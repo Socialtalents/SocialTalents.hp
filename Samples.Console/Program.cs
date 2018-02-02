@@ -123,7 +123,7 @@ namespace Samples.Console
 
             EventBus.Subscribe(
                  // We expectet UserRegistered events from EventQueue
-                 emailService.AsQueued()
+                 emailService.WhenQueued()
                  // Once received, retry event 6 times with exponential delays
                  .RetryQueued(6, Backoff.ExponentialBackoff(TimeSpan.FromSeconds(10)))
                  .WhenRetryQueueFailed((item, e) => Output.Error("Queued handler failed answer 6 attempts"))
