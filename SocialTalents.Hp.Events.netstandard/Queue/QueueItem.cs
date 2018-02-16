@@ -31,6 +31,15 @@ namespace SocialTalents.Hp.Events.Queue
         /// Event type to be used for Publish (can be different from Event.getType())
         /// </summary>
         string DeclaringEventType { get; set; }
+        /// <summary>
+        /// Information about current handler
+        /// </summary>
+        string HandlerId { get; set; }
+        /// <summary>
+        /// When last handling attempt started
+        /// </summary>
+        //[BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
+        DateTime HandlerStarted { get; set; }
     }
 
     /// <summary>
@@ -48,5 +57,7 @@ namespace SocialTalents.Hp.Events.Queue
         public DateTime HandleAfter { get; set; }
         public int Attempts { get; set; }
         public string DeclaringEventType { get; set; }
+        public string HandlerId { get; set; }
+        public DateTime HandlerStarted { get; set; }
     }
 }

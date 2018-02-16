@@ -202,5 +202,25 @@ namespace SocialTalents.Hp.UnitTests.Events
             Console.WriteLine(string.Format("{0} op/sec, {1} total", operationsPerSecond, counter));
             Assert.IsTrue(operationsPerSecond > 10000);
         }
+
+        [TestMethod]
+        public void Queue_RequeueEventAdded()
+        {
+            Assert.AreEqual(typeof(RequeueStuckEvents).AssemblyQualifiedName, repository.Queue.First().DeclaringEventType);
+        }
+
+        [TestMethod]
+        public void Queue_RequeueHandler_CallsRepository()
+        {
+            // clear queue first
+            repository.DeleteItem(repository.Queue.First());
+
+            // simulate handle
+            // Expecting exception since InMemory do not support it
+            Assert.ThrowsException<NotImplementedException>(() => testService.Handle(new RequeueStuckEvents()));
+
+            // But service still adds new event into queue
+            Queue_RequeueEventAdded();
+        }
     }
 }

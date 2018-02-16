@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using SocialTalents.Hp.Events.Queue;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,28 @@ namespace SocialTalents.Hp.MongoDB
 
         public void AddItem(IQueueItem item)
         {
-            base.Insert(item as QueueItem);
+            try
+            {
+                base.Insert(item as QueueItem);
+            }
+            catch (MongoWriteException ex)
+            {
+                if (ex.InnerException is MongoBulkWriteException innerException)
+                {
+                    if (innerException.WriteErrors.All(code => code.Code == 11000))
+                    {
+                        // duplicate key error collection, ignoring
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         public IQueueItem BuildNewItem(object eventInstance)
@@ -34,16 +56,47 @@ namespace SocialTalents.Hp.MongoDB
             base.Delete(item as QueueItem);
         }
 
+        public string HandlerId { get; set; } = ObjectId.GenerateNewId().ToString();
         public Expression<Func<QueueItem, bool>> FilterExpression { get; set; } = e => e.HandleAfter < DateTime.Now.ToUniversalTime();
 
-        public IEnumerable<IQueueItem> GetItemsToHandle(int limit = 10)
+        public virtual IEnumerable<IQueueItem> GetItemsToHandle(int limit = 6)
         {
-            return this.Where(FilterExpression).OrderBy(e => e.HandleAfter).ThenBy(e => e.Id).Take(limit);
+            int found = 0;
+            QueueItem r = null;
+            List<QueueItem> result = new List<QueueItem>();
+            do
+            {
+                var findNewEvents = Builders<QueueItem>.Filter.Where(FilterExpression);
+                var findNotStartedEvents = Builders<QueueItem>.Filter.Where(e => e.HandlerId == null);
+                var filter = Builders<QueueItem>.Filter.And(findNewEvents, findNotStartedEvents);
+                var setUpdate = Builders<QueueItem>.Update
+                    .Set(e => e.HandlerId, HandlerId)
+                    .Set(e => e.HandlerStarted, DateTime.UtcNow);
+                r = Collection.FindOneAndUpdate(filter, setUpdate,
+                    new FindOneAndUpdateOptions<QueueItem>() { IsUpsert = false, ReturnDocument = ReturnDocument.After });
+
+                if (r != null)
+                {
+                    found++;
+                    result.Add(r);
+                }
+            } while (r != null && found < limit);
+
+            return result;
         }
 
         public void UpdateItem(IQueueItem item)
         {
             base.Replace(item as QueueItem);
+        }
+
+        public long RequeueOldEvents(TimeSpan timeout)
+        {
+            var find = Builders<QueueItem>.Filter.Where(e => e.HandlerStarted < DateTime.UtcNow.Subtract(timeout) && e.HandlerId != null);
+            var setUpdate = Builders<QueueItem>.Update
+                    .Set(e => e.HandlerId, null);
+            var r = Collection.UpdateMany(find, setUpdate);
+            return r.ModifiedCount;
         }
     }
 }

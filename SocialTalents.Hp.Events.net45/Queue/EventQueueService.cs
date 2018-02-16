@@ -10,7 +10,9 @@ namespace SocialTalents.Hp.Events.Queue
     /// <summary>
     /// Store events in queue and process them syncronously
     /// </summary>
-    public class EventQueueService
+    public class EventQueueService:
+        ICanHandle<RequeueStuckEvents>,
+        ICanPublish<RequeueStuckEvents>
     {
         protected IEventQueueRepository _repository;
         protected EventBusService _eventBusService;
@@ -19,6 +21,16 @@ namespace SocialTalents.Hp.Events.Queue
         {
             _repository = repository;
             _eventBusService = eventBusService == null ? EventBus.Default : eventBusService;
+
+            SubscribeForRequeueStuckEvents(eventBusService);
+        }
+
+        protected virtual void SubscribeForRequeueStuckEvents(EventBusService eventBus)
+        {
+            eventBus.Subscribe(Enque<RequeueStuckEvents>(TimeSpan.FromSeconds(40)));
+            eventBus.Subscribe(this.WhenQueued());
+            // enqueue a first event
+            eventBus.Publish(new RequeueStuckEvents(), this);
         }
 
         /// <summary>
@@ -77,6 +89,10 @@ namespace SocialTalents.Hp.Events.Queue
         /// Default timeout interval for ProcessEvents
         /// </summary>
         public TimeSpan ProcessingTimeLimit { get; set; } = TimeSpan.FromSeconds(30);
+        /// <summary>
+        /// Default timeout when not completed event returned to execution pool
+        /// </summary>
+        public TimeSpan RequeueTimeLimit { get; set; } = TimeSpan.FromSeconds(300);
         /// <summary>
         /// Default portion size to read from queue
         /// </summary>
@@ -219,6 +235,18 @@ namespace SocialTalents.Hp.Events.Queue
         protected virtual ProcessEventsResult onBuildProcessEventsResult()
         {
             return new ProcessEventsResult();
+        }
+
+        public virtual void Handle(RequeueStuckEvents e)
+        {
+            try
+            {
+                _repository.RequeueOldEvents(RequeueTimeLimit);
+            }
+            finally
+            {
+                _eventBusService.Publish(e.Clone(), this);
+            }
         }
     }
 }
