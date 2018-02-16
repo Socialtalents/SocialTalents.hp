@@ -46,7 +46,7 @@ namespace SocialTalents.Hp.MongoDB
             }
         }
 
-        public IQueueItem BuildNewItem(object eventInstance)
+        public virtual IQueueItem BuildNewItem(object eventInstance)
         {
             return new QueueItem() { Event = eventInstance };
         }
@@ -85,12 +85,12 @@ namespace SocialTalents.Hp.MongoDB
             return result;
         }
 
-        public void UpdateItem(IQueueItem item)
+        public virtual void UpdateItem(IQueueItem item)
         {
             base.Replace(item as QueueItem);
         }
 
-        public long RequeueOldEvents(TimeSpan timeout)
+        public virtual long RequeueOldEvents(TimeSpan timeout)
         {
             var find = Builders<QueueItem>.Filter.Where(e => e.HandlerStarted < DateTime.UtcNow.Subtract(timeout) && e.HandlerId != null);
             var setUpdate = Builders<QueueItem>.Update
