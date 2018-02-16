@@ -245,7 +245,7 @@ namespace SocialTalents.Hp.Events.Queue
             }
             finally
             {
-                EventBus.Publish(e.Clone(), this);
+                _eventBusService.Publish(e.Clone(), this);
             }
         }
     }

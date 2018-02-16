@@ -22,10 +22,31 @@ namespace SocialTalents.Hp.MongoDB
 
         public void AddItem(IQueueItem item)
         {
-            base.Insert(item as QueueItem);
+            try
+            {
+                base.Insert(item as QueueItem);
+            }
+            catch (MongoWriteException ex)
+            {
+                if (ex.InnerException is MongoBulkWriteException innerException)
+                {
+                    if (innerException.WriteErrors.All(code => code.Code == 11000))
+                    {
+                        // duplicate key error collection, ignoring
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
-        public IQueueItem BuildNewItem(object eventInstance)
+        public virtual IQueueItem BuildNewItem(object eventInstance)
         {
             return new QueueItem() { Event = eventInstance };
         }
@@ -64,12 +85,12 @@ namespace SocialTalents.Hp.MongoDB
             return result;
         }
 
-        public void UpdateItem(IQueueItem item)
+        public virtual void UpdateItem(IQueueItem item)
         {
             base.Replace(item as QueueItem);
         }
 
-        public long RequeueOldEvents(TimeSpan timeout)
+        public virtual long RequeueOldEvents(TimeSpan timeout)
         {
             var find = Builders<QueueItem>.Filter.Where(e => e.HandlerStarted < DateTime.UtcNow.Subtract(timeout) && e.HandlerId != null);
             var setUpdate = Builders<QueueItem>.Update

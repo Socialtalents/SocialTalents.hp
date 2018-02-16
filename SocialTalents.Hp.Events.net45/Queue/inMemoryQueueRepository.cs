@@ -8,7 +8,7 @@ namespace SocialTalents.Hp.Events.Queue
 {
     public class InMemoryQueueRepository : IEventQueueRepository
     {
-        protected List<InMemoryQueueItem> Queue{ get; set; }
+        public List<InMemoryQueueItem> Queue{ get; set; }
         protected HashSet<string> UniqueIndex { get; set; }
         public string HandlerId { get; set; } = Guid.NewGuid().ToString();
 

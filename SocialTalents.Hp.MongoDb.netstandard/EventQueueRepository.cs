@@ -22,7 +22,28 @@ namespace SocialTalents.Hp.MongoDB
 
         public void AddItem(IQueueItem item)
         {
-            base.Insert(item as QueueItem);
+            try
+            {
+                base.Insert(item as QueueItem);
+            }
+            catch (MongoWriteException ex)
+            {
+                if (ex.InnerException is MongoBulkWriteException innerException)
+                {
+                    if (innerException.WriteErrors.All(code => code.Code == 11000))
+                    {
+                        // duplicate key error collection, ignoring
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         public IQueueItem BuildNewItem(object eventInstance)
