@@ -10,6 +10,7 @@ namespace SocialTalents.Hp.Events.Queue
     {
         protected List<InMemoryQueueItem> Queue{ get; set; }
         protected HashSet<string> UniqueIndex { get; set; }
+        public string HandlerId { get; set; } = Guid.NewGuid().ToString();
 
         public InMemoryQueueRepository()
         {
@@ -60,6 +61,11 @@ namespace SocialTalents.Hp.Events.Queue
             return Queue.Where(i => DateTime.Now >= i.HandleAfter).Take(limit)
                 // to allow deletion from Queue
                 .ToArray();
+        }
+
+        public virtual long RequeueOldEvents(TimeSpan timeout)
+        {
+            throw new NotImplementedException("InMemory repository do not support multiple workers");
         }
     }
 }

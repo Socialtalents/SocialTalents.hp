@@ -53,6 +53,10 @@ namespace SocialTalents.Hp.MongoDB
             }
         }
 
+        public string HandlerId { get; set; }
+        [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
+        public DateTime HandlerStarted { get; set; }
+
         private const string NULL = "null";
     }
 }
