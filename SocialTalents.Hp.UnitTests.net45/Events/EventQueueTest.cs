@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace SocialTalents.Hp.UnitTests.Events
 {
     [TestClass]
-    public class EventQueueTest : ICanPublish<TestEvent>, ICanPublish<UniqueEvent>, ICanPublish<GenericEvent<string>>
+    public class EventQueueTest : ICanPublish<TestEvent>, ICanPublish<UniqueEvent>, ICanPublish<GenericEvent<string>>, ICanPublish<HandleAfterEvent>
     {
         [TestInitialize]
         public void EventQueueTestInit()
@@ -207,6 +207,53 @@ namespace SocialTalents.Hp.UnitTests.Events
         public void Queue_RequeueEventAdded()
         {
             Assert.AreEqual(typeof(RequeueStuckEvents).AssemblyQualifiedName, repository.Queue.First().DeclaringEventType);
+        }
+
+        [TestMethod]
+        public void AddEvent_NoDelay()
+        {
+            bus.Subscribe(testService.Enque<TestEvent>());
+
+
+            bus.Publish(new TestEvent(), this);
+
+            // event sceduled for immediate execution
+            var eEntity = repository.Queue.First(r => r.DeclaringEventType == typeof(TestEvent).AssemblyQualifiedName);
+            Assert.IsTrue(eEntity.HandleAfter <= DateTime.Now);
+        }
+
+        [TestMethod]
+        public void AddEvent_WithDelay()
+        {
+            bus.Subscribe(testService.Enque<TestEvent>(TimeSpan.FromHours(1)));
+
+
+            bus.Publish(new TestEvent(), this);
+
+            // event sceduled for execution within an hour
+            var eEntity = repository.Queue.First(r => r.DeclaringEventType == typeof(TestEvent).AssemblyQualifiedName);
+            Assert.IsTrue(eEntity.HandleAfter.Subtract(DateTime.Now).TotalHours > 0.99);
+        }
+
+        [TestMethod]
+        public void AddEvent_WithHandleAfterAndDelay()
+        {
+            bus.Subscribe(testService.Enque<HandleAfterEvent>(TimeSpan.FromHours(1)));
+
+
+            Assert.ThrowsException<InvalidOperationException>(() => bus.Publish(new HandleAfterEvent(), this));
+        }
+
+        [TestMethod]
+        public void AddEvent_WithHandleAfter()
+        {
+            bus.Subscribe(testService.Enque<HandleAfterEvent>());
+
+
+            bus.Publish(new HandleAfterEvent() { HandleAfter = new DateTime(2097, 1, 1) }, this);
+
+            var eEntity = repository.Queue.First(r => r.DeclaringEventType == typeof(HandleAfterEvent).AssemblyQualifiedName);
+            Assert.AreEqual(eEntity.HandleAfter, new DateTime(2097, 1, 1));
         }
 
         [TestMethod]

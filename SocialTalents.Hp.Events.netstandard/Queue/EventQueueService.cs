@@ -47,11 +47,11 @@ namespace SocialTalents.Hp.Events.Queue
         /// Handler to enque event when it published to be handled after some interval
         /// </summary>
         /// <typeparam name="TEvent"></typeparam>
-        /// <param name="handleAfter"></param>
+        /// <param name="handlingDelay"></param>
         /// <returns></returns>
-        public virtual Delegate<TEvent> Enque<TEvent>(TimeSpan handleAfter)
+        public virtual Delegate<TEvent> Enque<TEvent>(TimeSpan handlingDelay)
         {
-            return (TEvent e) => AddEventHandler(e, typeof(TEvent), handleAfter);
+            return (TEvent e) => AddEventHandler(e, typeof(TEvent), handlingDelay);
         }
         
         /// <summary>
@@ -59,11 +59,16 @@ namespace SocialTalents.Hp.Events.Queue
         /// </summary>
         /// <param name="eventInstance"></param>
         /// <param name="queueType"></param>
-        /// <param name="handleAfter"></param>
-        protected virtual void AddEventHandler(object eventInstance, Type queueType, TimeSpan handleAfter) 
+        /// <param name="handlingDelay"></param>
+        protected virtual void AddEventHandler(object eventInstance, Type queueType, TimeSpan handlingDelay) 
         {
             var item = _repository.BuildNewItem(eventInstance);
-            item.HandleAfter = DateTime.Now.Add(handleAfter);
+            var eventAsHandleAfter = eventInstance as IHandleAfter;
+            if (eventAsHandleAfter != null && handlingDelay != TimeSpan.Zero)
+            {
+                throw new InvalidOperationException("Events which implements IHandleAfter cannot support handlingDelay");
+            }
+            item.HandleAfter = eventAsHandleAfter != null ? eventAsHandleAfter.HandleAfter : DateTime.Now.Add(handlingDelay);
             // storing only type name and assembly name, otherwise it will be impossible to deserialise object with newer assembly
             item.DeclaringEventType = queueType.AssemblyQualifiedName;
 
