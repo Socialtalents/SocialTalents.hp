@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>SocialTalents.Hp.Events</id>
-    <version>1.4.2</version>
+    <version>1.4.3</version>
     <title>SocialTalents.Hp.Events for .net 4.5.1+</title>
     <authors>SocialTalents Software Inc</authors>
     <owners>SocialTalents Software Inc</owners>
@@ -15,7 +15,7 @@
       Refer to https://github.com/Socialtalents/SocialTalents.hp for sources and samples
     </description>
     <releaseNotes>
-      IHandleAfter interface for queued events added
+      Fixed bug for Delayed events without UniqueKey
       Refer to https://github.com/Socialtalents/SocialTalents.hp for sources and samples</releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>Events Subscribe Publish</tags>

@@ -88,6 +88,10 @@ namespace SocialTalents.Hp.Events.Queue
             {
                 item.UniqueKey = uniqueKey.UniqueKey;
             }
+            else
+            {
+                item.UniqueKey = Guid.NewGuid().ToString();
+            }
         }
 
         /// <summary>
