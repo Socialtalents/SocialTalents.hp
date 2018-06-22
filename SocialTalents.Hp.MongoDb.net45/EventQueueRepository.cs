@@ -15,6 +15,10 @@ namespace SocialTalents.Hp.MongoDB
         public EventQueueRepository(IMongoDatabase database, string collectionName = null, MongoCollectionSettings settings = null):
             base(database, collectionName, settings)
         {
+        }
+
+        public virtual void AddIndexes()
+        {
             this.AddIndex("HandleAfter", b => b.Ascending(e => e.HandleAfter));
             this.AddIndex("Unique", b => b.Ascending(e => e.UniqueKey),
                 options => options.Unique = true);
