@@ -54,7 +54,12 @@
   <ItemGroup>
     <Compile Include="BaseMongoDocument.cs" />
     <Compile Include="EventQueueRepository.cs" />
+    <Compile Include="Id.cs" />
     <Compile Include="IDirectAccessRepository.cs" />
+    <Compile Include="IdMongoDocument.cs" />
+    <Compile Include="IdMongoRepository.cs" />
+    <Compile Include="IdSerializer.cs" />
+    <Compile Include="InMemoryIdRepository.cs" />
     <Compile Include="InMemoryRepository.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="MongoIndexExtensions.cs" />

@@ -4,12 +4,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace SocialTalents.Hp.MongoDB
 {
-    public class MongoRepository<T> : IDirectAccessRepository<T> where T : BaseMongoDocument
+    /// <summary>
+    /// Base class for Mongo repositories for <see cref="BaseMongoDocument{TId}"/>
+    /// </summary>
+    /// <typeparam name="T">Document type.</typeparam>
+    /// <typeparam name="TId">Document id type.</typeparam>
+    public abstract class MongoRepository<T, TId>: IDirectAccessRepository<T>
+        where T: BaseMongoDocument<TId>
+        where TId: struct, IEquatable<TId>, IComparable<TId>
     {
         public MongoRepository(IMongoDatabase database, string collectionName = null, MongoCollectionSettings settings = null)
         {
@@ -38,14 +44,15 @@ namespace SocialTalents.Hp.MongoDB
         {
             RaiseOnBeforeReplace(entity);
             entity.LastUpdated = DateTime.Now;
-            Collection.ReplaceOne(x => x.Id == entity.Id, entity);
+            var id = entity.Id;
+            Collection.ReplaceOne(x => x.Id.Equals(id), entity);
             RaiseOnReplace(entity);
         }
 
         public virtual void Delete(T entity)
         {
             RaiseOnBeforeDelete(entity);
-            Collection.DeleteOne(x => x.Id == entity.Id);
+            Collection.DeleteOne(x => x.Id.Equals(entity.Id));
             RaiseOnDelete(entity);
         }
 
@@ -56,10 +63,7 @@ namespace SocialTalents.Hp.MongoDB
             RaiseOnDeleteMany(query);
         }
 
-        public IQueryable<T> AsQueryable()
-        {
-            return Collection.AsQueryable();
-        }
+        public IQueryable<T> AsQueryable() => Collection.AsQueryable();
 
         public event EntitySaveDelegate<T> OnBeforeInsert;
         public event EntitySaveDelegate<T> OnInsert;
@@ -79,26 +83,25 @@ namespace SocialTalents.Hp.MongoDB
         protected void RaiseOnBeforeDeleteMany(Expression<Func<T, bool>> tester) => OnBeforeDeleteMany?.Invoke(tester);
         protected void RaiseOnDeleteMany(Expression<Func<T, bool>> tester) => OnDeleteMany?.Invoke(tester);
 
-        public Expression Expression
-        {
-            get { return Collection.AsQueryable().Expression; }
-        }
+        public Expression Expression => Collection.AsQueryable().Expression;
 
-        public Type ElementType
-        {
-            get { return typeof(T); }
-        }
+        public Type ElementType => typeof(T);
 
-        public IQueryProvider Provider { get { return Collection.AsQueryable().Provider; } }
+        public IQueryProvider Provider => Collection.AsQueryable().Provider;
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            return Collection.AsQueryable().GetEnumerator();
-        }
+        public IEnumerator<T> GetEnumerator() => Collection.AsQueryable().GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    /// <summary>
+    /// Mongo repository for <see cref="BaseMongoDocument"/>
+    /// </summary>
+    /// <typeparam name="T">Document type.</typeparam>
+    public class MongoRepository<T>: MongoRepository<T, ObjectId>
+        where T: BaseMongoDocument
+    {
+        public MongoRepository(IMongoDatabase database, string collectionName = null, MongoCollectionSettings settings = null):
+            base(database, collectionName, settings) { }
     }
 }
