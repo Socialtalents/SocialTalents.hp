@@ -1,37 +1,29 @@
 ﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace SocialTalents.Hp.MongoDB
 {
-    public class BaseMongoDocument
+    /// <summary>
+    /// Base Mongo document with custom id type.
+    /// </summary>
+    /// <remarks> All inheritors should ensure that <typeparamref name="TId"/> has correct <see cref="IBsonSerializer"/>. </remarks>
+    public abstract class BaseMongoDocument<TId>: IEquatable<BaseMongoDocument<TId>>
+        where TId: struct, IEquatable<TId>, IComparable<TId>
     {
-        public ObjectId Id { get; set; }
+        public TId Id { get; set; }
+
         [BsonElement("_lu")]
         public DateTime LastUpdated { get; set; }
 
-        public BaseMongoDocument()
-        {
-            Id = ObjectId.GenerateNewId();
-        }
+        #region Equality members
 
-        protected bool Equals(BaseMongoDocument other)
+        public bool Equals(BaseMongoDocument<TId> other)
         {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
             return Id.Equals(other.Id);
-        }
-
-        public static bool operator ==(BaseMongoDocument left, BaseMongoDocument right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(BaseMongoDocument left, BaseMongoDocument right)
-        {
-            return !Equals(left, right);
         }
 
         public override bool Equals(object obj)
@@ -39,12 +31,27 @@ namespace SocialTalents.Hp.MongoDB
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((BaseMongoDocument)obj);
+            return Equals((BaseMongoDocument<TId>)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
+
+        public static bool operator ==(BaseMongoDocument<TId> left, BaseMongoDocument<TId> right) => Equals(left, right);
+
+        public static bool operator !=(BaseMongoDocument<TId> left, BaseMongoDocument<TId> right) => !Equals(left, right);
+
+        #endregion
+
+        public abstract TId GenerateNewId();
+
+        protected BaseMongoDocument() => Id = GenerateNewId();
+    }
+
+    /// <summary>
+    /// Base Mongo document with <see cref="ObjectId"/> used as id.
+    /// </summary>
+    public class BaseMongoDocument: BaseMongoDocument<ObjectId>
+    {
+        public override ObjectId GenerateNewId() => ObjectId.GenerateNewId();
     }
 }

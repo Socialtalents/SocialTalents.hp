@@ -1,15 +1,20 @@
-﻿using MongoDB.Bson;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace SocialTalents.Hp.MongoDB
 {
-    public class InMemoryRepository<T> : IRepository<T> where T : BaseMongoDocument
+    /// <summary>
+    /// Base class for in-memory repositories for <see cref="BaseMongoDocument{TId}"/>
+    /// </summary>
+    /// <typeparam name="T">Document type.</typeparam>
+    /// <typeparam name="TId">Document id type.</typeparam>
+    public abstract class InMemoryRepository<T, TId>: IRepository<T>
+        where T: BaseMongoDocument<TId>
+        where TId: struct, IEquatable<TId>, IComparable<TId>
     {
         private readonly List<T> _entities;
 
@@ -22,11 +27,9 @@ namespace SocialTalents.Hp.MongoDB
         {
             RaiseOnBeforeInsert(entity);
             entity.LastUpdated = DateTime.Now;
+            if (entity.Id.Equals(default(TId)))
+                entity.Id = entity.GenerateNewId();
 
-            if (entity.Id == ObjectId.Empty)
-            {
-                entity.Id = ObjectId.GenerateNewId();
-            }
             _entities.Add(entity);
             RaiseOnInsert(entity);
         }
@@ -40,9 +43,9 @@ namespace SocialTalents.Hp.MongoDB
             RaiseOnReplace(entity);
         }
 
-        private void DeleteIfFound(T Entity)
+        private void DeleteIfFound(T entity)
         {
-            var existingItem = _entities.FirstOrDefault(e => e.Id == Entity.Id);
+            var existingItem = _entities.FirstOrDefault(e => e.Id.Equals(entity.Id));
             if (existingItem != null)
                 _entities.Remove(existingItem);
         }
@@ -87,26 +90,18 @@ namespace SocialTalents.Hp.MongoDB
         protected void RaiseOnBeforeDeleteMany(Expression<Func<T, bool>> tester) => OnBeforeDeleteMany?.Invoke(tester);
         protected void RaiseOnDeleteMany(Expression<Func<T, bool>> tester) => OnDeleteMany?.Invoke(tester);
 
-        public Expression Expression
-        {
-            get { return _entities.AsQueryable().Expression; }
-        }
+        public Type ElementType => typeof(T);
+        public Expression Expression => _entities.AsQueryable().Expression;
+        public IQueryProvider Provider => _entities.AsQueryable().Provider;
 
-        public Type ElementType
-        {
-            get { return typeof(T); }
-        }
-
-        public IQueryProvider Provider { get { return _entities.AsQueryable().Provider; } }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return _entities.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        public IEnumerator<T> GetEnumerator() => _entities.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
+
+    /// <summary>
+    /// In-memory repository for <see cref="BaseMongoDocument"/>
+    /// </summary>
+    /// <typeparam name="T">Document type.</typeparam>
+    public class InMemoryRepository<T>: InMemoryRepository<T, ObjectId>
+        where T: BaseMongoDocument<ObjectId> { }
 }
