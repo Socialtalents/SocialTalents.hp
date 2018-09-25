@@ -27,6 +27,8 @@ namespace SocialTalents.Hp.MongoDB
         {
             RaiseOnBeforeInsert(entity);
             entity.LastUpdated = DateTime.Now;
+            if (entity.Id.Equals(default(TId)))
+                entity.Id = entity.GenerateNewId();
 
             _entities.Add(entity);
             RaiseOnInsert(entity);

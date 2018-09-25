@@ -1,7 +1,7 @@
 ﻿namespace SocialTalents.Hp.MongoDB
 {
     /// <summary>
-    /// Base Mongo document with strongly-typed represented via <see cref="Id{T}"/>.
+    /// Base Mongo document with strongly-typed id represented via <see cref="Id{T}"/>.
     /// </summary>
     public class IdMongoDocument<T>: BaseMongoDocument<Id<T>>
     {

@@ -28,15 +28,9 @@ namespace SocialTalents.Hp.MongoDB
 
         #region Conversion operators
 
-        public static implicit operator ObjectId(Id<T> id)
-        {
-            return id.ObjectId;
-        }
+        public static implicit operator ObjectId(Id<T> id) => id.ObjectId;
 
-        public static implicit operator Id<T>(ObjectId objectId)
-        {
-            return new Id<T>(objectId);
-        }
+        public static implicit operator Id<T>(ObjectId objectId) => new Id<T>(objectId);
 
         #endregion
 
