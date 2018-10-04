@@ -9,7 +9,7 @@ namespace SocialTalents.Hp.MongoDB
     /// </summary>
     /// <typeparam name="T">Document type this id is for.</typeparam>
     /// <remarks>Is tied to <see cref="IdSerializer{T}"/> for mapping it to <see cref="ObjectId"/> in Mongo.</remarks>
-    public struct Id<T>: IEquatable<Id<T>>, IEquatable<ObjectId>, IComparable<Id<T>>, IComparable<ObjectId>, IConvertible
+    public struct Id<T>: IEquatable<Id<T>>, IEquatable<ObjectId>, IComparable<Id<T>>, IComparable<ObjectId>
     {
         static Id() => BsonSerializer.RegisterSerializer(typeof(Id<T>), IdSerializer<T>.Instance);
 
@@ -72,11 +72,27 @@ namespace SocialTalents.Hp.MongoDB
 
         public static bool operator <(Id<T> left, Id<T> right) => left.ObjectId < right.ObjectId;
 
+        public static bool operator <(ObjectId left, Id<T> right) => left < right;
+
+        public static bool operator <(Id<T> left, ObjectId right) => left < right;
+
         public static bool operator >(Id<T> left, Id<T> right) => left.ObjectId > right.ObjectId;
+
+        public static bool operator >(ObjectId left, Id<T> right) => left > right;
+
+        public static bool operator >(Id<T> left, ObjectId right) => left > right;
 
         public static bool operator <=(Id<T> left, Id<T> right) => left.ObjectId <= right.ObjectId;
 
+        public static bool operator <=(ObjectId left, Id<T> right) => left <= right;
+
+        public static bool operator <=(Id<T> left, ObjectId right) => left <= right;
+
         public static bool operator >=(Id<T> left, Id<T> right) => left.ObjectId >= right.ObjectId;
+
+        public static bool operator >=(ObjectId left, Id<T> right) => left >= right;
+
+        public static bool operator >=(Id<T> left, ObjectId right) => left >= right;
 
         #endregion
 
@@ -117,44 +133,5 @@ namespace SocialTalents.Hp.MongoDB
         public byte[] ToByteArray() => ObjectId.ToByteArray();
 
         public void ToByteArray(byte[] destination, int offset) => ObjectId.ToByteArray(destination, offset);
-
-        #region Implementation of IConvertible
-
-        TypeCode IConvertible.GetTypeCode() => ((IConvertible)ObjectId).GetTypeCode();
-
-        bool IConvertible.ToBoolean(IFormatProvider provider) => ((IConvertible)ObjectId).ToBoolean(provider);
-
-        char IConvertible.ToChar(IFormatProvider provider) => ((IConvertible)ObjectId).ToChar(provider);
-
-        sbyte IConvertible.ToSByte(IFormatProvider provider) => ((IConvertible)ObjectId).ToSByte(provider);
-
-        byte IConvertible.ToByte(IFormatProvider provider) => ((IConvertible)ObjectId).ToByte(provider);
-
-        short IConvertible.ToInt16(IFormatProvider provider) => ((IConvertible)ObjectId).ToInt16(provider);
-
-        ushort IConvertible.ToUInt16(IFormatProvider provider) => ((IConvertible)ObjectId).ToUInt16(provider);
-
-        int IConvertible.ToInt32(IFormatProvider provider) => ((IConvertible)ObjectId).ToInt32(provider);
-
-        uint IConvertible.ToUInt32(IFormatProvider provider) => ((IConvertible)ObjectId).ToUInt32(provider);
-
-        long IConvertible.ToInt64(IFormatProvider provider) => ((IConvertible)ObjectId).ToInt64(provider);
-
-        ulong IConvertible.ToUInt64(IFormatProvider provider) => ((IConvertible)ObjectId).ToUInt64(provider);
-
-        float IConvertible.ToSingle(IFormatProvider provider) => ((IConvertible)ObjectId).ToSingle(provider);
-
-        double IConvertible.ToDouble(IFormatProvider provider) => ((IConvertible)ObjectId).ToDouble(provider);
-
-        decimal IConvertible.ToDecimal(IFormatProvider provider) => ((IConvertible)ObjectId).ToDecimal(provider);
-
-        DateTime IConvertible.ToDateTime(IFormatProvider provider) => ((IConvertible)ObjectId).ToDateTime(provider);
-
-        string IConvertible.ToString(IFormatProvider provider) => ((IConvertible)ObjectId).ToString(provider);
-
-        object IConvertible.ToType(Type conversionType, IFormatProvider provider) => ((IConvertible)ObjectId).ToType(conversionType, provider);
-
-        #endregion
-
     }
 }
