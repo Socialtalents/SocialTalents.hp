@@ -9,28 +9,90 @@ namespace SocialTalents.Hp.MongoDB
     /// </summary>
     /// <typeparam name="T">Document type this id is for.</typeparam>
     /// <remarks>Is tied to <see cref="IdSerializer{T}"/> for mapping it to <see cref="ObjectId"/> in Mongo.</remarks>
-    public struct Id<T>: IEquatable<Id<T>>, IComparable<Id<T>>, IEquatable<ObjectId>
+    public struct Id<T>: IEquatable<Id<T>>, IEquatable<ObjectId>, IComparable<Id<T>>, IComparable<ObjectId>
     {
         static Id() => BsonSerializer.RegisterSerializer(typeof(Id<T>), IdSerializer<T>.Instance);
 
-        public ObjectId ObjectId { get; }
+        public static Id<T> Empty => ObjectId.Empty;
 
-        public Id(ObjectId objectId)
+        public static Id<T> GenerateNewId() => ObjectId.GenerateNewId();
+
+        public static Id<T> GenerateNewId(DateTime timestamp) => ObjectId.GenerateNewId(timestamp);
+
+        public static Id<T> GenerateNewId(int timestamp) => ObjectId.GenerateNewId(timestamp);
+
+        public static Id<T> Parse(string s) => ObjectId.Parse(s);
+
+        public static bool TryParse(string s, out Id<T> id)
         {
-            ObjectId = objectId;
+            var success = ObjectId.TryParse(s, out var objectId);
+            id = objectId;
+            return success;
         }
 
+        public static byte[] Pack(int timestamp, int machine, short pid, int increment) =>
+            ObjectId.Pack(timestamp, machine, pid, increment);
+
+        public static void Unpack(byte[] bytes, out int timestamp, out int machine, out short pid, out int increment) =>
+            ObjectId.Unpack(bytes, out timestamp, out machine, out pid, out increment);
+
+        public ObjectId ObjectId { get; }
+
+        public Id(ObjectId objectId) => ObjectId = objectId;
+
+        public Id(byte[] bytes) => ObjectId = new ObjectId(bytes);
+
+        public Id(DateTime timestamp, int machine, short pid, int increment) =>
+            ObjectId = new ObjectId(timestamp, machine, pid, increment);
+
+        public Id(int timestamp, int machine, short pid, int increment) =>
+            ObjectId = new ObjectId(timestamp, machine, pid, increment);
+
+        public Id(string value) => ObjectId = new ObjectId(value);
+
+        public int Timestamp => ObjectId.Timestamp;
+
+        public int Machine => ObjectId.Machine;
+
+        public int Pid => ObjectId.Pid;
+
+        public int Increment => ObjectId.Increment;
+
         public DateTime CreationTime => ObjectId.CreationTime;
-
-        public static Id<T> Parse(string s) => new Id<T>(ObjectId.Parse(s));
-
-        public static Id<T> GenerateNewId() => new Id<T>(ObjectId.GenerateNewId());
 
         #region Conversion operators
 
         public static implicit operator ObjectId(Id<T> id) => id.ObjectId;
 
         public static implicit operator Id<T>(ObjectId objectId) => new Id<T>(objectId);
+
+        #endregion
+
+        #region Comparison operators
+
+        public static bool operator <(Id<T> left, Id<T> right) => left.ObjectId < right.ObjectId;
+
+        public static bool operator <(ObjectId left, Id<T> right) => left < right;
+
+        public static bool operator <(Id<T> left, ObjectId right) => left < right;
+
+        public static bool operator >(Id<T> left, Id<T> right) => left.ObjectId > right.ObjectId;
+
+        public static bool operator >(ObjectId left, Id<T> right) => left > right;
+
+        public static bool operator >(Id<T> left, ObjectId right) => left > right;
+
+        public static bool operator <=(Id<T> left, Id<T> right) => left.ObjectId <= right.ObjectId;
+
+        public static bool operator <=(ObjectId left, Id<T> right) => left <= right;
+
+        public static bool operator <=(Id<T> left, ObjectId right) => left <= right;
+
+        public static bool operator >=(Id<T> left, Id<T> right) => left.ObjectId >= right.ObjectId;
+
+        public static bool operator >=(ObjectId left, Id<T> right) => left >= right;
+
+        public static bool operator >=(Id<T> left, ObjectId right) => left >= right;
 
         #endregion
 
@@ -60,10 +122,16 @@ namespace SocialTalents.Hp.MongoDB
 
         public static bool operator !=(ObjectId left, Id<T> right) => !(left == right);
 
-        public int CompareTo(Id<T> other) => ObjectId.CompareTo(other.ObjectId);
+        public int CompareTo(Id<T> other) => CompareTo(other.ObjectId);
+
+        public int CompareTo(ObjectId other) => ObjectId.CompareTo(other);
 
         #endregion
 
         public override string ToString() => ObjectId.ToString();
+
+        public byte[] ToByteArray() => ObjectId.ToByteArray();
+
+        public void ToByteArray(byte[] destination, int offset) => ObjectId.ToByteArray(destination, offset);
     }
 }
