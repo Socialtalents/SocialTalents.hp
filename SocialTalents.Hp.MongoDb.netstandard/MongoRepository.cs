@@ -13,8 +13,9 @@ namespace SocialTalents.Hp.MongoDB
     /// </summary>
     /// <typeparam name="T">Document type.</typeparam>
     /// <typeparam name="TId">Document id type.</typeparam>
-    public class MongoRepository<T, TId>: IDirectAccessRepository<T>
-        where T: BaseMongoDocument<TId>
+    public class MongoRepository<TBase, TChild, TId>: IDirectAccessRepository<TBase, TChild> 
+        where TChild : TBase
+        where TBase: BaseMongoDocument<TId>
         where TId: struct, IEquatable<TId>, IComparable<TId>
     {
         public MongoRepository(IMongoDatabase database, string collectionName = null, MongoCollectionSettings settings = null)
@@ -23,20 +24,20 @@ namespace SocialTalents.Hp.MongoDB
             {
                 collectionName = typeof(TId).GenericTypeArguments.First().Name;
             }
-            CollectionName = collectionName ?? typeof(T).Name;
+            CollectionName = collectionName ?? typeof(TBase).Name;
             Collection = GetCollection(database, settings);
         }
 
         public string CollectionName { get; private set; }
 
-        protected IMongoCollection<T> GetCollection(IMongoDatabase database, MongoCollectionSettings settings)
+        protected IMongoCollection<TBase> GetCollection(IMongoDatabase database, MongoCollectionSettings settings)
         {
-            return database.GetCollection<T>(CollectionName, settings ?? new MongoCollectionSettings());
+            return database.GetCollection<TBase>(CollectionName, settings ?? new MongoCollectionSettings());
         }
 
-        public IMongoCollection<T> Collection { get; private set; }
+        public IMongoCollection<TBase> Collection { get; private set; }
 
-        public virtual void Insert(T entity)
+        public virtual void Insert(TBase entity)
         {
             RaiseOnBeforeInsert(entity);
             entity.LastUpdated = DateTime.Now;
@@ -44,7 +45,7 @@ namespace SocialTalents.Hp.MongoDB
             RaiseOnInsert(entity);
         }
 
-        public virtual void Replace(T entity)
+        public virtual void Replace(TBase entity)
         {
             RaiseOnBeforeReplace(entity);
             entity.LastUpdated = DateTime.Now;
@@ -53,47 +54,50 @@ namespace SocialTalents.Hp.MongoDB
             RaiseOnReplace(entity);
         }
 
-        public virtual void Delete(T entity)
+        public virtual void Delete(TBase entity)
         {
             RaiseOnBeforeDelete(entity);
             Collection.DeleteOne(x => x.Id.Equals(entity.Id));
             RaiseOnDelete(entity);
         }
 
-        public virtual void DeleteMany(Expression<Func<T, bool>> query)
+        public virtual void DeleteMany(Expression<Func<TBase, bool>> query)
         {
             RaiseOnBeforeDeleteMany(query);
             Collection.DeleteMany(query);
             RaiseOnDeleteMany(query);
         }
 
-        public IQueryable<T> AsQueryable() => Collection.AsQueryable();
+        public IQueryable<TBase> AsQueryable() => Collection.AsQueryable();
 
-        public event EntitySaveDelegate<T> OnBeforeInsert;
-        public event EntitySaveDelegate<T> OnInsert;
-        public event EntitySaveDelegate<T> OnBeforeReplace;
-        public event EntitySaveDelegate<T> OnReplace;
-        public event EntityDeleteDelegate<T> OnBeforeDelete;
-        public event EntityDeleteDelegate<T> OnDelete;
-        public event EntityDeleteManyDelegate<T> OnBeforeDeleteMany;
-        public event EntityDeleteManyDelegate<T> OnDeleteMany;
+        public event EntitySaveDelegate<TBase> OnBeforeInsert;
+        public event EntitySaveDelegate<TBase> OnInsert;
+        public event EntitySaveDelegate<TBase> OnBeforeReplace;
+        public event EntitySaveDelegate<TBase> OnReplace;
+        public event EntityDeleteDelegate<TBase> OnBeforeDelete;
+        public event EntityDeleteDelegate<TBase> OnDelete;
+        public event EntityDeleteManyDelegate<TBase> OnBeforeDeleteMany;
+        public event EntityDeleteManyDelegate<TBase> OnDeleteMany;
 
-        protected void RaiseOnBeforeInsert(T t) => OnBeforeInsert?.Invoke(t);
-        protected void RaiseOnInsert(T t) => OnInsert?.Invoke(t);
-        protected void RaiseOnBeforeReplace(T t) => OnBeforeReplace?.Invoke(t);
-        protected void RaiseOnReplace(T t) => OnReplace?.Invoke(t);
-        protected void RaiseOnBeforeDelete(T t) => OnBeforeDelete?.Invoke(t);
-        protected void RaiseOnDelete(T t) => OnDelete?.Invoke(t);
-        protected void RaiseOnBeforeDeleteMany(Expression<Func<T, bool>> tester) => OnBeforeDeleteMany?.Invoke(tester);
-        protected void RaiseOnDeleteMany(Expression<Func<T, bool>> tester) => OnDeleteMany?.Invoke(tester);
+        protected void RaiseOnBeforeInsert(TBase t) => OnBeforeInsert?.Invoke(t);
+        protected void RaiseOnInsert(TBase t) => OnInsert?.Invoke(t);
+        protected void RaiseOnBeforeReplace(TBase t) => OnBeforeReplace?.Invoke(t);
+        protected void RaiseOnReplace(TBase t) => OnReplace?.Invoke(t);
+        protected void RaiseOnBeforeDelete(TBase t) => OnBeforeDelete?.Invoke(t);
+        protected void RaiseOnDelete(TBase t) => OnDelete?.Invoke(t);
+        protected void RaiseOnBeforeDeleteMany(Expression<Func<TBase, bool>> tester) => OnBeforeDeleteMany?.Invoke(tester);
+        protected void RaiseOnDeleteMany(Expression<Func<TBase, bool>> tester) => OnDeleteMany?.Invoke(tester);
 
         public Expression Expression => Collection.AsQueryable().Expression;
 
-        public Type ElementType => typeof(T);
+        public Type ElementType => typeof(TBase);
 
         public IQueryProvider Provider => Collection.AsQueryable().Provider;
 
-        public IEnumerator<T> GetEnumerator() => Collection.AsQueryable().GetEnumerator();
+        public IEnumerator<TChild> GetEnumerator() {
+            var baseEnumerator = Collection.AsQueryable().GetEnumerator();
+            return baseEnumerator.Cast<TBase, TChild>();
+        }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
@@ -102,7 +106,7 @@ namespace SocialTalents.Hp.MongoDB
     /// Mongo repository for <see cref="BaseMongoDocument"/>
     /// </summary>
     /// <typeparam name="T">Document type.</typeparam>
-    public class MongoRepository<T>: MongoRepository<T, ObjectId>
+    public class MongoRepository<T>: MongoRepository<T, T, ObjectId>
         where T: BaseMongoDocument
     {
         public MongoRepository(IMongoDatabase database, string collectionName = null, MongoCollectionSettings settings = null):

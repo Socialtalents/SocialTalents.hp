@@ -6,7 +6,7 @@ namespace SocialTalents.Hp.MongoDB
     /// Mongo repository for <see cref="TypedIdMongoDocument{T}"/>
     /// </summary>
     /// <typeparam name="T">Document type.</typeparam>
-    public class MongoTypedIdRepository<T>: MongoRepository<T, Id<T>>
+    public class MongoTypedIdRepository<T>: MongoRepository<T, T, Id<T>>
         where T: TypedIdMongoDocument<T>
     {
         public MongoTypedIdRepository(IMongoDatabase database, string collectionName = null, MongoCollectionSettings settings = null):

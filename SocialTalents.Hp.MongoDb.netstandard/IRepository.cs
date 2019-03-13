@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SocialTalents.Hp.MongoDB
 {
-    public interface IRepositoryEx<TBase, out TChild>: IQueryable<TChild>, IEnumerable<TChild> where TBase : TChild
+    public interface IRepositoryEx<TBase, out TChild>: IQueryable<TChild>, IEnumerable<TChild> where TChild : TBase
     {
         void Insert(TBase entity);
         void Replace(TBase entity);

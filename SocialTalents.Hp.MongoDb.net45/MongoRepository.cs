@@ -13,7 +13,7 @@ namespace SocialTalents.Hp.MongoDB
     /// </summary>
     /// <typeparam name="T">Document type.</typeparam>
     /// <typeparam name="TId">Document id type.</typeparam>
-    public class MongoRepository<TBase, TChild, TId>: IDirectAccessRepository<TBase, TChild> 
+    public class MongoRepository<TBase, TChild, TId>: IDirectAccessRepository<TBase, TChild>, IRepository<TBase>
         where TChild : TBase
         where TBase: BaseMongoDocument<TId>
         where TId: struct, IEquatable<TId>, IComparable<TId>
@@ -100,6 +100,11 @@ namespace SocialTalents.Hp.MongoDB
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        IEnumerator<TBase> IEnumerable<TBase>.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>

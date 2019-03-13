@@ -14,12 +14,12 @@ namespace SocialTalents.Hp.UnitTests.MongoDB
     {
         public void TestOutParameter()
         {
-            var repoParent = new MongoRepository<ParentEntity>(null);
+            var repoParent = new MongoRepository<ParentEntity, ParentEntity, Id<ParentEntity>>(null);
 
-            var repoChild = new MongoRepository<ChildEntity, Id<ParentEntity>>(null);
+            var repoChild = new MongoRepository<ParentEntity, ChildEntity, Id<ParentEntity>>(null);
         }
 
-        public class ParentEntity : BaseMongoDocument
+        public class ParentEntity : TypedIdMongoDocument<ParentEntity>
         {
 
         }

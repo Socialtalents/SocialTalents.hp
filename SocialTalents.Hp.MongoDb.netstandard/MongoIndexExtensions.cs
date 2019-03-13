@@ -9,12 +9,13 @@ namespace SocialTalents.Hp.MongoDB
 {
     public static class MongoIndexExtension
     {
-        public static IRepository<T> AddIndex<T>(this IRepository<T> repo, string indexName, Func<IndexKeysDefinitionBuilder<T>, IndexKeysDefinition<T>> builderRule, params Action<CreateIndexOptions>[] optionsModifiers) where T: BaseMongoDocument
+        public static IRepositoryEx<TBase, TChild> AddIndex<TBase, TChild>(this IRepositoryEx<TBase, TChild> repo, string indexName, 
+            Func<IndexKeysDefinitionBuilder<TBase>, IndexKeysDefinition<TBase>> builderRule, params Action<CreateIndexOptions>[] optionsModifiers) where TBase: BaseMongoDocument where TChild: TBase
         {
             // InMemoryRepository do not have to support indexes since target use case is Unit Testing only
-            if (repo is MongoRepository<T> mongoRepository)
+            if (repo is MongoRepository<TBase> mongoRepository)
             {
-                var indexKeysDefinition = builderRule(Builders<T>.IndexKeys);
+                var indexKeysDefinition = builderRule(Builders<TBase>.IndexKeys);
                 CreateIndexOptions defOptions = new CreateIndexOptions();
                 optionsModifiers.Select(modifier => { modifier(defOptions); return true; });
                 // We need index name so we can delete it (TBD)
