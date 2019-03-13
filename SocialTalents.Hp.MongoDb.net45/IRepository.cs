@@ -7,30 +7,32 @@ using System.Threading.Tasks;
 
 namespace SocialTalents.Hp.MongoDB
 {
-    public interface IRepository<T> :IQueryable<T>, IEnumerable<T>
+    public interface IRepositoryEx<TBase, out TChild>: IQueryable<TChild>, IEnumerable<TChild> where TBase : TChild
     {
-        void Insert(T entity);
-        void Replace(T entity);
-        void Delete(T entity);
-        void DeleteMany(Expression<Func<T, bool>> query);
+        void Insert(TBase entity);
+        void Replace(TBase entity);
+        void Delete(TBase entity);
+        void DeleteMany(Expression<Func<TBase, bool>> query);
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        event EntitySaveDelegate<T> OnBeforeInsert;
+        event EntitySaveDelegate<TBase> OnBeforeInsert;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        event EntitySaveDelegate<T> OnInsert;
+        event EntitySaveDelegate<TBase> OnInsert;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        event EntitySaveDelegate<T> OnBeforeReplace;
+        event EntitySaveDelegate<TBase> OnBeforeReplace;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        event EntitySaveDelegate<T> OnReplace;
+        event EntitySaveDelegate<TBase> OnReplace;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        event EntityDeleteDelegate<T> OnBeforeDelete;
+        event EntityDeleteDelegate<TBase> OnBeforeDelete;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        event EntityDeleteDelegate<T> OnDelete;
+        event EntityDeleteDelegate<TBase> OnDelete;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        event EntityDeleteManyDelegate<T> OnBeforeDeleteMany;
+        event EntityDeleteManyDelegate<TBase> OnBeforeDeleteMany;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        event EntityDeleteManyDelegate<T> OnDeleteMany;
+        event EntityDeleteManyDelegate<TBase> OnDeleteMany;
 
     }
+
+    public interface IRepository<TBase> : IRepositoryEx<TBase, TBase>, IQueryable<TBase>, IEnumerable<TBase> { }
 
     public delegate void EntitySaveDelegate<T>(T t);
     public delegate void EntityDeleteDelegate<T>(T t);

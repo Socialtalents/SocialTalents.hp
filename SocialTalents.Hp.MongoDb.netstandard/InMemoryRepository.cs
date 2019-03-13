@@ -12,7 +12,7 @@ namespace SocialTalents.Hp.MongoDB
     /// </summary>
     /// <typeparam name="T">Document type.</typeparam>
     /// <typeparam name="TId">Document id type.</typeparam>
-    public abstract class InMemoryRepository<T, TId>: IRepository<T>
+    public class InMemoryRepository<T, TId>: IRepository<T>
         where T: BaseMongoDocument<TId>
         where TId: struct, IEquatable<TId>, IComparable<TId>
     {

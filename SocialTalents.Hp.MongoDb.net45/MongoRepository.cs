@@ -13,12 +13,16 @@ namespace SocialTalents.Hp.MongoDB
     /// </summary>
     /// <typeparam name="T">Document type.</typeparam>
     /// <typeparam name="TId">Document id type.</typeparam>
-    public abstract class MongoRepository<T, TId>: IDirectAccessRepository<T>
+    public class MongoRepository<T, TId>: IDirectAccessRepository<T>
         where T: BaseMongoDocument<TId>
         where TId: struct, IEquatable<TId>, IComparable<TId>
     {
         public MongoRepository(IMongoDatabase database, string collectionName = null, MongoCollectionSettings settings = null)
         {
+            if (collectionName != null && typeof(TId).TypeIs(typeof(Id<>)))
+            {
+                collectionName = typeof(TId).GenericTypeArguments.First().Name;
+            }
             CollectionName = collectionName ?? typeof(T).Name;
             Collection = GetCollection(database, settings);
         }
