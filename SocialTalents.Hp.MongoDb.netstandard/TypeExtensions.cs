@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace SocialTalents.Hp.MongoDB
         // https://stackoverflow.com/a/47900592/11768
         public static bool TypeIs(this Type x, Type d)
         {
+            return false;/*
             if (null == d)
             {
                 return false;
@@ -31,7 +33,15 @@ namespace SocialTalents.Hp.MongoDB
                 }
             }
 
-            return false;
+            return false;*/
+        }
+
+        public static IEnumerator<TChild> Cast<TParent, TChild>(this IEnumerator<TParent> iterator) where TChild: TParent
+        {
+            while (iterator.MoveNext())
+            {
+                yield return (TChild)iterator.Current;
+            }
         }
     }
 }

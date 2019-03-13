@@ -33,5 +33,13 @@ namespace SocialTalents.Hp.MongoDB
 
             return false;
         }
+
+        public static IEnumerator<TChild> Cast<TParent, TChild>(this IEnumerator<TParent> iterator) where TChild : TParent
+        {
+            while (iterator.MoveNext())
+            {
+                yield return (TChild)iterator.Current;
+            }
+        }
     }
 }

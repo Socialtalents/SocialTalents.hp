@@ -78,6 +78,7 @@
     <Compile Include="Events\InMemoryQueueRepositoryTest.cs" />
     <Compile Include="MongoDB\IdTests.cs" />
     <Compile Include="MongoDB\InMemoryRepositoryTest.cs" />
+    <Compile Include="MongoDB\RepositoryOutParametersTest.cs" />
     <Compile Include="MongoDB\RepositoryTest.cs" />
     <Compile Include="MongoDB\TestDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

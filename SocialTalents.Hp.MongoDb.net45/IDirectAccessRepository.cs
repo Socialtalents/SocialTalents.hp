@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace SocialTalents.Hp.MongoDB
 {
-    public interface IDirectAccessRepository<T> : IRepository<T>
+    public interface IDirectAccessRepository<TBase, out TChild> : IRepositoryEx<TBase, TChild> where TChild : TBase
     {
-        IMongoCollection<T> Collection { get; }
+        IMongoCollection<TBase> Collection { get; }
     }
 }
