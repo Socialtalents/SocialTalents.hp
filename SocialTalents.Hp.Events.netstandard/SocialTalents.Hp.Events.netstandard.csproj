@@ -5,7 +5,7 @@
     <PackageIconUrl>http://www.socialtalents.com/favicon-96x96.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/Socialtalents/SocialTalents.hp</RepositoryUrl>
     <PackageTags>Events Subscribe Publish netstandard</PackageTags>
-    <PackageReleaseNotes>Fixed bug for Delayed events without UniqueKey
+    <PackageReleaseNotes>Exception handling for Event deserialization
 See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</PackageReleaseNotes>
     <Copyright>2014</Copyright>
     <Authors>SocialTalents Software Inc</Authors>
@@ -17,7 +17,7 @@ See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</D
     <ApplicationIcon></ApplicationIcon>
     <AssemblyVersion>1.4.3.0</AssemblyVersion>
     <FileVersion>1.4.3.0</FileVersion>
-    <Version>1.4.3</Version>
+    <Version>1.4.4</Version>
     <PreBuildEvent>del /s $(SolutionDir)\SocialTalents.Hp.Events.netstandard\*.cs
 xcopy $(SolutionDir)\SocialTalents.Hp.Events.net45\*.cs $(SolutionDir)\SocialTalents.Hp.Events.netstandard /e /y
 del $(SolutionDir)\SocialTalents.Hp.Events.netstandard\Properties\AssemblyInfo.cs</PreBuildEvent>

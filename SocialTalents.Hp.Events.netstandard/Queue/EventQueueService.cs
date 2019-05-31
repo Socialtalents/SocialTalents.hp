@@ -12,7 +12,8 @@ namespace SocialTalents.Hp.Events.Queue
     /// </summary>
     public class EventQueueService:
         ICanHandle<RequeueStuckEvents>,
-        ICanPublish<RequeueStuckEvents>
+        ICanPublish<RequeueStuckEvents>,
+        ICanPublish<Exception>
     {
         protected IEventQueueRepository _repository;
         protected EventBusService _eventBusService;
@@ -143,9 +144,25 @@ namespace SocialTalents.Hp.Events.Queue
         /// <param name="item"></param>
         protected virtual void onProcessQueueItem(IQueueItem item)
         {
-            MethodInfo genericMethod = GetPublishMethodInfo(item.DeclaringEventType);
-            object typedEvent = BuildGenericQueueEvent(item);
-            object sender = BuildSender(item.DeclaringEventType);
+            MethodInfo genericMethod;
+            object typedEvent;
+            object sender;
+            // Any exception within following try/catch block is final
+            // report exception for handing and remove event from queue as failed
+            try
+            {
+                genericMethod = GetPublishMethodInfo(item.DeclaringEventType);
+                typedEvent = BuildGenericQueueEvent(item);
+                sender = BuildSender(item.DeclaringEventType);
+            } 
+            catch (Exception ex)
+            {
+                onEventFailed(item, ex);
+                _eventBusService.Publish<Exception>(ex, this);
+                return;
+            }
+
+            // Event handling here
             try
             {
                 genericMethod.Invoke(_eventBusService, new[] { typedEvent, sender });
