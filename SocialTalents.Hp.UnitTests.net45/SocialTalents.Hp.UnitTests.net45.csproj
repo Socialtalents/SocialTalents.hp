@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="Events\AsyncTests.cs" />
     <Compile Include="Events\EventsTest.cs" />
+    <Compile Include="Events\FailingEventQueueTests.cs" />
     <Compile Include="Events\Internal\ChildEvent.cs" />
     <Compile Include="Events\Internal\GenericEvenr.cs" />
     <Compile Include="Events\Internal\HandleAfterEvent.cs" />
