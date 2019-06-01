@@ -21,6 +21,7 @@ namespace SocialTalents.Hp.Events.Queue
         public EventQueueService(IEventQueueRepository repository, EventBusService eventBusService = null)
         {
             _repository = repository;
+            
             _eventBusService = eventBusService == null ? EventBus.Default : eventBusService;
 
             SubscribeForRequeueStuckEvents(eventBusService);
@@ -102,7 +103,12 @@ namespace SocialTalents.Hp.Events.Queue
         /// <summary>
         /// Default timeout when not completed event returned to execution pool
         /// </summary>
-        public TimeSpan RequeueTimeLimit { get; set; } = TimeSpan.FromSeconds(300);
+        public TimeSpan RequeueTimeLimit
+        {
+            get { return _repository.QueueExecutionTimeout; }
+            set { _repository.QueueExecutionTimeout = value; }
+        }
+
         /// <summary>
         /// Default portion size to read from queue
         /// </summary>
@@ -267,7 +273,7 @@ namespace SocialTalents.Hp.Events.Queue
         {
             try
             {
-                _repository.RequeueOldEvents(RequeueTimeLimit);
+                _repository.RequeueOldEvents();
             }
             finally
             {
