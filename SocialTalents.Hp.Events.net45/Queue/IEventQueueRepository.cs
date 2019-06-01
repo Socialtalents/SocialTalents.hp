@@ -44,7 +44,7 @@ namespace SocialTalents.Hp.Events.Queue
         /// returns to Queue events which stuck to handle
         /// </summary>
         /// <returns></returns>
-        long RequeueOldEvents();
+        long RequeueStuckEvents();
         
         /// <summary>
         /// Controls execution timeout

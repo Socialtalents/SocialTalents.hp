@@ -64,7 +64,7 @@ namespace SocialTalents.Hp.Events.Queue
                 .ToArray();
         }
 
-        public virtual long RequeueOldEvents()
+        public virtual long RequeueStuckEvents()
         {
             throw new NotImplementedException("InMemory repository do not support multiple workers");
         }

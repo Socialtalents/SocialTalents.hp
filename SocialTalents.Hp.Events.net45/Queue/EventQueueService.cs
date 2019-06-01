@@ -272,7 +272,7 @@ namespace SocialTalents.Hp.Events.Queue
         {
             try
             {
-                _repository.RequeueOldEvents();
+                _repository.RequeueStuckEvents();
             }
             finally
             {

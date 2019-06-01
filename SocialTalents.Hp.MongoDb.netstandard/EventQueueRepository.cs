@@ -105,7 +105,7 @@ namespace SocialTalents.Hp.MongoDB
             base.Replace(item as QueueItem);
         }
 
-        public virtual long RequeueOldEvents()
+        public virtual long RequeueStuckEvents()
         {
             var find = Builders<QueueItem>.Filter.Where(e => e.HandlerStarted < DateTime.UtcNow.Subtract(QueueExecutionTimeout) && e.HandlerId != null);
             var setUpdate = Builders<QueueItem>.Update
