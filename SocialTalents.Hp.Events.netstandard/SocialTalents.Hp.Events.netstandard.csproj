@@ -15,9 +15,9 @@ See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</P
 See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</Description>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <ApplicationIcon></ApplicationIcon>
-    <AssemblyVersion>1.4.3.0</AssemblyVersion>
-    <FileVersion>1.4.3.0</FileVersion>
-    <Version>1.4.4</Version>
+    <AssemblyVersion>1.5.0.0</AssemblyVersion>
+    <FileVersion>1.5.0.0</FileVersion>
+    <Version>1.5.0-beta1</Version>
     <PreBuildEvent>del /s $(SolutionDir)\SocialTalents.Hp.Events.netstandard\*.cs
 xcopy $(SolutionDir)\SocialTalents.Hp.Events.net45\*.cs $(SolutionDir)\SocialTalents.Hp.Events.netstandard /e /y
 del $(SolutionDir)\SocialTalents.Hp.Events.netstandard\Properties\AssemblyInfo.cs</PreBuildEvent>
