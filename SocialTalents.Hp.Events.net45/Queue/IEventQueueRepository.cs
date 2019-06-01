@@ -15,6 +15,8 @@ namespace SocialTalents.Hp.Events.Queue
         void DeleteItem(IQueueItem item);
 
         IEnumerable<IQueueItem> GetItemsToHandle(int limit = 10);
-        long RequeueOldEvents(TimeSpan timeout);
+        long RequeueOldEvents();
+
+        TimeSpan QueueExecutionTimeout { get; set; }
     }
 }

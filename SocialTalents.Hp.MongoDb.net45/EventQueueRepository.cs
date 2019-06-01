@@ -62,6 +62,10 @@ namespace SocialTalents.Hp.MongoDB
 
         public string HandlerId { get; set; } = ObjectId.GenerateNewId().ToString();
         public Expression<Func<QueueItem, bool>> FilterExpression { get; set; } = e => e.HandleAfter < DateTime.Now.ToUniversalTime();
+        public TimeSpan QueueExecutionTimeout { get; set; } = TimeSpan.FromSeconds(300);
+
+        // UniqueKet of special event which QueueService uses to requeue stuck events
+        private static readonly string RequeueStuckEventsUniqueKey = new RequeueStuckEvents().UniqueKey;
 
         public virtual IEnumerable<IQueueItem> GetItemsToHandle(int limit = 6)
         {
@@ -72,7 +76,13 @@ namespace SocialTalents.Hp.MongoDB
             {
                 var findNewEvents = Builders<QueueItem>.Filter.Where(FilterExpression);
                 var findNotStartedEvents = Builders<QueueItem>.Filter.Where(e => e.HandlerId == null);
-                var filter = Builders<QueueItem>.Filter.And(findNewEvents, findNotStartedEvents);
+                var findRequeueStuckEvent = Builders<QueueItem>.Filter
+                    .Where(e => e.UniqueKey == RequeueStuckEventsUniqueKey &&
+                        e.HandlerId != null &&
+                        e.HandlerStarted < DateTime.UtcNow.Subtract(QueueExecutionTimeout));
+                var filterEvent = Builders<QueueItem>.Filter.And(findNewEvents, findNotStartedEvents);
+                var filter = Builders<QueueItem>.Filter.Or(filterEvent, findRequeueStuckEvent);
+
                 var setUpdate = Builders<QueueItem>.Update
                     .Set(e => e.HandlerId, HandlerId)
                     .Set(e => e.HandlerStarted, DateTime.UtcNow);
@@ -94,9 +104,9 @@ namespace SocialTalents.Hp.MongoDB
             base.Replace(item as QueueItem);
         }
 
-        public virtual long RequeueOldEvents(TimeSpan timeout)
+        public virtual long RequeueOldEvents()
         {
-            var find = Builders<QueueItem>.Filter.Where(e => e.HandlerStarted < DateTime.UtcNow.Subtract(timeout) && e.HandlerId != null);
+            var find = Builders<QueueItem>.Filter.Where(e => e.HandlerStarted < DateTime.UtcNow.Subtract(QueueExecutionTimeout) && e.HandlerId != null);
             var setUpdate = Builders<QueueItem>.Update
                     .Set(e => e.HandlerId, null);
             var r = Collection.UpdateMany(find, setUpdate);
