@@ -61,7 +61,6 @@ namespace SocialTalents.Hp.MongoDB
         }
 
         public string HandlerId { get; set; } = ObjectId.GenerateNewId().ToString();
-        public Expression<Func<QueueItem, bool>> FilterExpression { get; set; } = e => e.HandleAfter < DateTime.Now.ToUniversalTime();
         public TimeSpan QueueExecutionTimeout { get; set; } = TimeSpan.FromSeconds(300);
 
         // UniqueKet of special event which QueueService uses to requeue stuck events
@@ -74,19 +73,21 @@ namespace SocialTalents.Hp.MongoDB
             List<QueueItem> result = new List<QueueItem>();
             do
             {
-                var findNewEvents = Builders<QueueItem>.Filter.Where(FilterExpression);
-                var findNotStartedEvents = Builders<QueueItem>.Filter.Where(e => e.HandlerId == null);
-                var findRequeueStuckEvent = Builders<QueueItem>.Filter
+                var newEventsFilter = Builders<QueueItem>.Filter.Where(e => e.HandleAfter < DateTime.Now.ToUniversalTime());
+                var notStartedFilter = Builders<QueueItem>.Filter.Where(e => e.HandlerId == null);
+                var stuckRequeueFilter = Builders<QueueItem>.Filter
                     .Where(e => e.UniqueKey == RequeueStuckEventsUniqueKey &&
                         e.HandlerId != null &&
                         e.HandlerStarted < DateTime.UtcNow.Subtract(QueueExecutionTimeout));
-                var filterEvent = Builders<QueueItem>.Filter.And(findNewEvents, findNotStartedEvents);
-                var filter = Builders<QueueItem>.Filter.Or(filterEvent, findRequeueStuckEvent);
+                var regularEventsFilter = Builders<QueueItem>.Filter.And(newEventsFilter, notStartedFilter);
+                var regularEventsOrStuckRequeueFilter = Builders<QueueItem>.Filter.Or(regularEventsFilter, stuckRequeueFilter);
 
                 var setUpdate = Builders<QueueItem>.Update
                     .Set(e => e.HandlerId, HandlerId)
                     .Set(e => e.HandlerStarted, DateTime.UtcNow);
-                r = Collection.FindOneAndUpdate(filter, setUpdate,
+                
+                // Find first event matching filter and update HandlerId so other handlers will not pick it up
+                r = Collection.FindOneAndUpdate(regularEventsOrStuckRequeueFilter, setUpdate,
                     new FindOneAndUpdateOptions<QueueItem>() { IsUpsert = false, ReturnDocument = ReturnDocument.After });
 
                 if (r != null)

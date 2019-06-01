@@ -21,7 +21,6 @@ namespace SocialTalents.Hp.Events.Queue
         public EventQueueService(IEventQueueRepository repository, EventBusService eventBusService = null)
         {
             _repository = repository;
-            
             _eventBusService = eventBusService == null ? EventBus.Default : eventBusService;
 
             SubscribeForRequeueStuckEvents(eventBusService);
