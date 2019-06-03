@@ -1,4 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Driver;
 using SocialTalents.Hp.MongoDB;
 using System;
 using System.Linq;
@@ -81,9 +84,9 @@ namespace SocialTalents.Hp.UnitTests.MongoDB
 
             // Verify that mongo do not accept null document
             Exception ex = Assert.ThrowsException<NullReferenceException>(() => _repository.Insert(newDoc));
-            
+
             _repository.OnBeforeDelete += x => throw new NotImplementedException();
-            _repository.OnBeforeInsert+= x => throw new ArgumentException();
+            _repository.OnBeforeInsert += x => throw new ArgumentException();
             _repository.OnBeforeReplace += x => throw new ArgumentNullException();
             _repository.OnBeforeDeleteMany += x => throw new ArgumentOutOfRangeException();
 
@@ -134,6 +137,30 @@ namespace SocialTalents.Hp.UnitTests.MongoDB
             {
                 _testDb.Dispose();
             }
+        }
+
+        [TestMethod] 
+        public void VerifyGetItemsFilterValid() {
+            var repo = new EventQueueRepository(new TestDatabase().MongoDatabase);
+            var filter = repo.GetItemsToHandleFilter();
+            // Assert filter can be built
+            string s = RenderToBsonDocument(filter).ToString();
+            
+        }
+        [TestMethod]
+        public void VerifyRequeFilterValid()
+        {
+            var repo = new EventQueueRepository(new TestDatabase().MongoDatabase);
+            var filter = repo.RequeueStuckEventsFilter();
+            // Assert filter can be built
+            string s = RenderToBsonDocument(filter).ToString();
+        }
+
+        public static BsonDocument RenderToBsonDocument<T>(FilterDefinition<T> filter)
+        {
+            var serializerRegistry = BsonSerializer.SerializerRegistry;
+            var documentSerializer = serializerRegistry.GetSerializer<T>();
+            return filter.Render(documentSerializer, serializerRegistry);
         }
     }
 }

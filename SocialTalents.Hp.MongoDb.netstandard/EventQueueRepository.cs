@@ -61,7 +61,10 @@ namespace SocialTalents.Hp.MongoDB
         }
 
         public string HandlerId { get; set; } = ObjectId.GenerateNewId().ToString();
-        public Expression<Func<QueueItem, bool>> FilterExpression { get; set; } = e => e.HandleAfter < DateTime.Now.ToUniversalTime();
+        public TimeSpan QueueExecutionTimeout { get; set; } = TimeSpan.FromSeconds(300);
+        
+        // UniqueKet of special event which QueueService uses to requeue stuck events
+        private static readonly string RequeueStuckEventsUniqueKey = new RequeueStuckEvents().UniqueKey;
 
         public virtual IEnumerable<IQueueItem> GetItemsToHandle(int limit = 6)
         {
@@ -70,13 +73,14 @@ namespace SocialTalents.Hp.MongoDB
             List<QueueItem> result = new List<QueueItem>();
             do
             {
-                var findNewEvents = Builders<QueueItem>.Filter.Where(FilterExpression);
-                var findNotStartedEvents = Builders<QueueItem>.Filter.Where(e => e.HandlerId == null);
-                var filter = Builders<QueueItem>.Filter.And(findNewEvents, findNotStartedEvents);
+                FilterDefinition<QueueItem> regularEventsOrStuckRequeueFilter = GetItemsToHandleFilter();
+
                 var setUpdate = Builders<QueueItem>.Update
                     .Set(e => e.HandlerId, HandlerId)
                     .Set(e => e.HandlerStarted, DateTime.UtcNow);
-                r = Collection.FindOneAndUpdate(filter, setUpdate,
+
+                // Find first event matching filter and update HandlerId so other handlers will not pick it up
+                r = Collection.FindOneAndUpdate(regularEventsOrStuckRequeueFilter, setUpdate,
                     new FindOneAndUpdateOptions<QueueItem>() { IsUpsert = false, ReturnDocument = ReturnDocument.After });
 
                 if (r != null)
@@ -89,18 +93,41 @@ namespace SocialTalents.Hp.MongoDB
             return result;
         }
 
+        public FilterDefinition<QueueItem> GetItemsToHandleFilter()
+        {
+            var timeoutAsVariable = QueueExecutionTimeout;
+
+            var newEventsFilter = Builders<QueueItem>.Filter.Where(e => e.HandleAfter < DateTime.Now.ToUniversalTime());
+            var notStartedFilter = Builders<QueueItem>.Filter.Where(e => e.HandlerId == null);
+            var stuckRequeueFilter = Builders<QueueItem>.Filter
+                .Where(e => e.UniqueKey == RequeueStuckEventsUniqueKey &&
+                    e.HandlerId != null &&
+                    e.HandlerStarted < DateTime.UtcNow.Subtract(timeoutAsVariable));
+            var regularEventsFilter = Builders<QueueItem>.Filter.And(newEventsFilter, notStartedFilter);
+            var regularEventsOrStuckRequeueFilter = Builders<QueueItem>.Filter.Or(regularEventsFilter, stuckRequeueFilter);
+            return regularEventsOrStuckRequeueFilter;
+        }
+
         public virtual void UpdateItem(IQueueItem item)
         {
             base.Replace(item as QueueItem);
         }
 
-        public virtual long RequeueOldEvents(TimeSpan timeout)
+        public virtual long RequeueStuckEvents()
         {
-            var find = Builders<QueueItem>.Filter.Where(e => e.HandlerStarted < DateTime.UtcNow.Subtract(timeout) && e.HandlerId != null);
+            FilterDefinition<QueueItem> find = RequeueStuckEventsFilter();
             var setUpdate = Builders<QueueItem>.Update
                     .Set(e => e.HandlerId, null);
             var r = Collection.UpdateMany(find, setUpdate);
             return r.ModifiedCount;
+        }
+
+        public FilterDefinition<QueueItem> RequeueStuckEventsFilter()
+        {
+            var timeoutAsVariable = QueueExecutionTimeout;
+
+            var find = Builders<QueueItem>.Filter.Where(e => e.HandlerStarted < DateTime.UtcNow.Subtract(timeoutAsVariable) && e.HandlerId != null);
+            return find;
         }
     }
 }

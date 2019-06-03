@@ -11,6 +11,7 @@ namespace SocialTalents.Hp.Events.Queue
         public List<InMemoryQueueItem> Queue{ get; set; }
         protected HashSet<string> UniqueIndex { get; set; }
         public string HandlerId { get; set; } = Guid.NewGuid().ToString();
+        public TimeSpan QueueExecutionTimeout { get; set; } = TimeSpan.FromSeconds(300);
 
         public InMemoryQueueRepository()
         {
@@ -63,7 +64,7 @@ namespace SocialTalents.Hp.Events.Queue
                 .ToArray();
         }
 
-        public virtual long RequeueOldEvents(TimeSpan timeout)
+        public virtual long RequeueStuckEvents()
         {
             throw new NotImplementedException("InMemory repository do not support multiple workers");
         }
