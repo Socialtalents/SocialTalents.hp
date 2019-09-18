@@ -79,6 +79,7 @@
     <Compile Include="Events\InMemoryQueueRepositoryTest.cs" />
     <Compile Include="MongoDB\IdTests.cs" />
     <Compile Include="MongoDB\InMemoryRepositoryTest.cs" />
+    <Compile Include="MongoDB\InMemoryTypedIdRepositoryTest.cs" />
     <Compile Include="MongoDB\MongoTypedIdRepositoryTest.cs" />
     <Compile Include="MongoDB\RepositoryTest.cs" />
     <Compile Include="MongoDB\TestDatabase.cs" />

@@ -23,7 +23,7 @@ namespace SocialTalents.Hp.MongoDB
             _entities = entities ?? new List<T>();
         }
 
-        public void Insert(T entity)
+        public virtual void Insert(T entity)
         {
             RaiseOnBeforeInsert(entity);
             entity.LastUpdated = DateTime.Now;
@@ -34,30 +34,36 @@ namespace SocialTalents.Hp.MongoDB
             RaiseOnInsert(entity);
         }
 
-        public void Replace(T entity)
+        public virtual void Replace(T entity)
         {
             RaiseOnBeforeReplace(entity);
             entity.LastUpdated = DateTime.Now;
-            DeleteIfFound(entity);
-            _entities.Add(entity);
+            if (DeleteIfFound(entity))
+            {
+                _entities.Add(entity);
+            }
             RaiseOnReplace(entity);
         }
 
-        private void DeleteIfFound(T entity)
+        private bool DeleteIfFound(T entity)
         {
             var existingItem = _entities.FirstOrDefault(e => e.Id.Equals(entity.Id));
             if (existingItem != null)
+            {
                 _entities.Remove(existingItem);
+                return true;
+            }
+            return false;
         }
 
-        public void Delete(T entity)
+        public virtual void Delete(T entity)
         {
             RaiseOnBeforeDelete(entity);
             DeleteIfFound(entity);
             RaiseOnDelete(entity);
         }
 
-        public void DeleteMany(Expression<Func<T, bool>> query)
+        public virtual void DeleteMany(Expression<Func<T, bool>> query)
         {
             RaiseOnBeforeDeleteMany(query);
             _entities.RemoveAll(query.Compile().Invoke);
