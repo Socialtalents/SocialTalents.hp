@@ -24,25 +24,23 @@ namespace SocialTalents.Hp.MongoDB
             var lastUpdated = entity.LastUpdated;
             entity.LastUpdated = DateTime.Now;
 
-            ReplaceOneResult replaceResult;
-
             if (AllowOptimistickLock)
             {
-                replaceResult = Collection.ReplaceOne(x => x.Id.Equals(id) && x.LastUpdated.Equals(lastUpdated), entity);
+                var replaceResult = Collection.ReplaceOne(x => x.Id.Equals(id) && x.LastUpdated.Equals(lastUpdated), entity);
+
+                if (replaceResult.IsModifiedCountAvailable && replaceResult.ModifiedCount == 0)
+                {
+                    var count = Collection.Count(x => x.Id.Equals(id));
+
+                    if (count > 0)
+                    {
+                        throw new OptimistickLockException(this.CollectionName);
+                    }
+                }
             }
             else
             {
-                replaceResult = Collection.ReplaceOne(x => x.Id.Equals(id), entity);
-            }
-
-            if (AllowOptimistickLock && replaceResult.IsModifiedCountAvailable && replaceResult.ModifiedCount == 0)
-            {
-                var count = Collection.Count(x => x.Id.Equals(id));
-
-                if (count > 0)
-                {
-                    throw new OptimistickLockException(this.CollectionName);
-                }
+                Collection.ReplaceOne(x => x.Id.Equals(id), entity);
             }
 
             RaiseOnReplace(entity);
