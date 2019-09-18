@@ -1,5 +1,4 @@
 ﻿using SocialTalents.Hp.MongoDB.Exceptions;
-using System;
 using System.Linq;
 
 namespace SocialTalents.Hp.MongoDB
@@ -43,7 +42,5 @@ namespace SocialTalents.Hp.MongoDB
 
             base.Replace(entity);
         }
-
     }
-
 }
