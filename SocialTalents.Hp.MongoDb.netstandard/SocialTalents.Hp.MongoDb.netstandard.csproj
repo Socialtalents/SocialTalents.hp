@@ -15,8 +15,8 @@ See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</P
     <RepositoryUrl>https://github.com/Socialtalents/SocialTalents.hp</RepositoryUrl>
     <Copyright>2014-2018</Copyright>
     <Description>Helper classes for DAL based on MongoDB</Description>
-    <AssemblyVersion>1.6.0.0-rc1</AssemblyVersion>
-    <FileVersion>1.6.0.0-rc1</FileVersion>
+    <AssemblyVersion>1.6.0.0</AssemblyVersion>
+    <FileVersion>1.6.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
