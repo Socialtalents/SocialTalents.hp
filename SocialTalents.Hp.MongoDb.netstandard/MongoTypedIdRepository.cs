@@ -11,8 +11,11 @@ namespace SocialTalents.Hp.MongoDB
     public class MongoTypedIdRepository<T>: MongoRepository<T, Id<T>>
         where T: TypedIdMongoDocument<T>
     {
-        public MongoTypedIdRepository(IMongoDatabase database, string collectionName = null, MongoCollectionSettings settings = null):
-            base(database, collectionName, settings) { }
+        public MongoTypedIdRepository(IMongoDatabase database, string collectionName = null, MongoCollectionSettings settings = null, bool allowOptimisticLock = true) :
+            base(database, collectionName, settings)
+        {
+            AllowOptimistickLock = allowOptimisticLock;
+        }
 
         public bool AllowOptimistickLock { get; private set; }
 
