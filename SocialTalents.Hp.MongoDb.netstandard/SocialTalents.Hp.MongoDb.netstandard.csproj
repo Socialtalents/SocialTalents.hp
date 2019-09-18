@@ -8,15 +8,15 @@
 xcopy $(SolutionDir)\SocialTalents.Hp.MongoDB.net45\*.cs $(SolutionDir)\SocialTalents.Hp.MongoDB.netstandard /e /y
 del $(SolutionDir)\SocialTalents.Hp.MongoDB.netstandard\Properties\AssemblyInfo.cs</PreBuildEvent>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.5.0</Version>
-    <PackageReleaseNotes>Added support for TypedId 
+    <Version>1.6.0-rc1</Version>
+    <PackageReleaseNotes>Optimistick locking verification added 
 See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</PackageReleaseNotes>
     <PackageIconUrl>http://www.socialtalents.com/favicon-96x96.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/Socialtalents/SocialTalents.hp</RepositoryUrl>
     <Copyright>2014-2018</Copyright>
     <Description>Helper classes for DAL based on MongoDB</Description>
-    <AssemblyVersion>1.5.0.0</AssemblyVersion>
-    <FileVersion>1.5.0.0</FileVersion>
+    <AssemblyVersion>1.6.0.0-rc1</AssemblyVersion>
+    <FileVersion>1.6.0.0-rc1</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
