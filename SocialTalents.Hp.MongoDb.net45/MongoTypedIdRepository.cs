@@ -33,7 +33,7 @@ namespace SocialTalents.Hp.MongoDB
 
                 if (replaceResult.IsModifiedCountAvailable && replaceResult.ModifiedCount == 0)
                 {
-                    var count = Collection.Count(x => x.Id.Equals(id));
+                    var count = Collection.CountDocuments(x => x.Id.Equals(id));
 
                     if (count > 0)
                     {

@@ -24,7 +24,7 @@ See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</P
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.4.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.8.1" />
   </ItemGroup>
 
   <ItemGroup>
