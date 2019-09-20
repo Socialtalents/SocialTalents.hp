@@ -27,7 +27,7 @@ namespace SocialTalents.Hp.MongoDB
                 var id = entity.Id;
                 var lastUpdated = entity.LastUpdated;
 
-                var existingItem = this.FirstOrDefault(e => e.Id == id && e.LastUpdated == lastUpdated);
+                var existingItem = this.FirstOrDefault(e => e.Id == entity.Id && e.LastUpdated == lastUpdated);
 
                 if (existingItem == null)
                 {
