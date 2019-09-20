@@ -29,11 +29,11 @@ namespace SocialTalents.Hp.MongoDB
 
             if (AllowOptimistickLock)
             {
-                var replaceResult = Collection.ReplaceOne(x => x.Id.Equals(id) && x.LastUpdated.Equals(lastUpdated), entity);
+                var replaceResult = Collection.ReplaceOne(x => x.Id == id && x.LastUpdated == lastUpdated, entity);
 
                 if (replaceResult.IsModifiedCountAvailable && replaceResult.ModifiedCount == 0)
                 {
-                    var count = Collection.CountDocuments(x => x.Id.Equals(id));
+                    var count = Collection.CountDocuments(x => x.Id == id);
 
                     if (count > 0)
                     {

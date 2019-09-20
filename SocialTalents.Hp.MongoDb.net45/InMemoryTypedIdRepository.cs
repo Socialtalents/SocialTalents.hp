@@ -27,11 +27,11 @@ namespace SocialTalents.Hp.MongoDB
                 var id = entity.Id;
                 var lastUpdated = entity.LastUpdated;
 
-                var existingItem = this.FirstOrDefault(e => e.Id.Equals(entity.Id) && e.LastUpdated.Equals(lastUpdated));
+                var existingItem = this.FirstOrDefault(e => e.Id == entity.Id && e.LastUpdated == lastUpdated);
 
                 if (existingItem == null)
                 {
-                    var count = this.Count(x => x.Id.Equals(id));
+                    var count = this.Count(x => x.Id == id);
 
                     if (count > 0)
                     {
