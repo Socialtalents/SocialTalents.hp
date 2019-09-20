@@ -24,8 +24,8 @@ namespace SocialTalents.Hp.MongoDB
             RaiseOnBeforeReplace(entity);
 
             var id = entity.Id;
-            var lastUpdated = entity.LastUpdated;
-            entity.LastUpdated = DateTime.Now;
+            var lastUpdated = entity.LastUpdated.ToUniversalTime();
+            entity.LastUpdated = DateTime.UtcNow;
 
             if (AllowOptimistickLock)
             {

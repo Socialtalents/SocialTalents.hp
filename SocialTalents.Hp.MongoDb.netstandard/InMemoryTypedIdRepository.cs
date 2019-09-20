@@ -25,9 +25,9 @@ namespace SocialTalents.Hp.MongoDB
             if (AllowOptimistickLock)
             {
                 var id = entity.Id;
-                var lastUpdated = entity.LastUpdated;
+                var lastUpdated = entity.LastUpdated.ToUniversalTime();
 
-                var existingItem = this.FirstOrDefault(e => e.Id == entity.Id && e.LastUpdated == lastUpdated);
+                var existingItem = this.FirstOrDefault(e => e.Id == id && e.LastUpdated == lastUpdated);
 
                 if (existingItem == null)
                 {

@@ -26,7 +26,7 @@ namespace SocialTalents.Hp.MongoDB
         public virtual void Insert(T entity)
         {
             RaiseOnBeforeInsert(entity);
-            entity.LastUpdated = DateTime.Now;
+            entity.LastUpdated = DateTime.UtcNow;
             if (entity.Id.Equals(default(TId)))
                 entity.Id = entity.GenerateNewId();
 
@@ -37,7 +37,7 @@ namespace SocialTalents.Hp.MongoDB
         public virtual void Replace(T entity)
         {
             RaiseOnBeforeReplace(entity);
-            entity.LastUpdated = DateTime.Now;
+            entity.LastUpdated = DateTime.UtcNow;
             if (DeleteIfFound(entity))
             {
                 _entities.Add(entity);
