@@ -11,8 +11,6 @@ namespace SocialTalents.Hp.MongoDB
     /// <remarks>Is tied to <see cref="IdSerializer{T}"/> for mapping it to <see cref="ObjectId"/> in Mongo.</remarks>
     public struct Id<T>: IEquatable<Id<T>>, IEquatable<ObjectId>, IComparable<Id<T>>, IComparable<ObjectId>
     {
-        static Id() => BsonSerializer.RegisterSerializer(typeof(Id<T>), IdSerializer<T>.Instance);
-
         public static Id<T> Empty => ObjectId.Empty;
 
         public static Id<T> GenerateNewId() => ObjectId.GenerateNewId();

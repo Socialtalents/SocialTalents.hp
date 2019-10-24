@@ -35,7 +35,7 @@ namespace SocialTalents.Hp.MongoDB
         public virtual void Insert(T entity)
         {
             RaiseOnBeforeInsert(entity);
-            entity.LastUpdated = DateTime.Now;
+            entity.LastUpdated = DateTime.UtcNow;
             Collection.InsertOne(entity);
             RaiseOnInsert(entity);
         }
@@ -43,7 +43,7 @@ namespace SocialTalents.Hp.MongoDB
         public virtual void Replace(T entity)
         {
             RaiseOnBeforeReplace(entity);
-            entity.LastUpdated = DateTime.Now;
+            entity.LastUpdated = DateTime.UtcNow;
             var id = entity.Id;
             Collection.ReplaceOne(x => x.Id.Equals(id), entity);
             RaiseOnReplace(entity);

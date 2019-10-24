@@ -39,28 +39,34 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DnsClient, Version=1.2.0.0, Culture=neutral, PublicKeyToken=4574bb5573c51424, processorArchitecture=MSIL">
+      <HintPath>..\packages\DnsClient.1.2.0\lib\net45\DnsClient.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.1.11\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.1.11\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Bson, Version=2.4.0.70, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MongoDB.Bson.2.4.0\lib\net45\MongoDB.Bson.dll</HintPath>
+    <Reference Include="MongoDB.Bson, Version=2.8.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Bson.2.8.1\lib\net452\MongoDB.Bson.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Driver, Version=2.4.0.70, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MongoDB.Driver.2.4.0\lib\net45\MongoDB.Driver.dll</HintPath>
+    <Reference Include="MongoDB.Driver, Version=2.8.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.2.8.1\lib\net452\MongoDB.Driver.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Driver.Core, Version=2.4.0.70, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MongoDB.Driver.Core.2.4.0\lib\net45\MongoDB.Driver.Core.dll</HintPath>
+    <Reference Include="MongoDB.Driver.Core, Version=2.8.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.Core.2.8.1\lib\net452\MongoDB.Driver.Core.dll</HintPath>
     </Reference>
     <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard1.1\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +85,8 @@
     <Compile Include="Events\InMemoryQueueRepositoryTest.cs" />
     <Compile Include="MongoDB\IdTests.cs" />
     <Compile Include="MongoDB\InMemoryRepositoryTest.cs" />
+    <Compile Include="MongoDB\InMemoryTypedIdRepositoryTest.cs" />
+    <Compile Include="MongoDB\MongoTypedIdRepositoryTest.cs" />
     <Compile Include="MongoDB\RepositoryTest.cs" />
     <Compile Include="MongoDB\TestDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
