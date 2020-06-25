@@ -22,7 +22,15 @@ See https://github.com/Socialtalents/SocialTalents.hp for sources and samples</D
 xcopy $(SolutionDir)\SocialTalents.Hp.Events.net45\*.cs $(SolutionDir)\SocialTalents.Hp.Events.netstandard /e /y
 del $(SolutionDir)\SocialTalents.Hp.Events.netstandard\Properties\AssemblyInfo.cs</PreBuildEvent>
     <PackageId>SocialTalents.Hp.Events.netstandard</PackageId>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard1.2\SocialTalents.Hp.Events.xml</DocumentationFile>
